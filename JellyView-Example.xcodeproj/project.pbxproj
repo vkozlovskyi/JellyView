@@ -12,6 +12,7 @@
 		E71DF49B1CD243FD008DF0DC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E71DF4991CD243FD008DF0DC /* Main.storyboard */; };
 		E71DF49D1CD243FD008DF0DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E71DF49C1CD243FD008DF0DC /* Assets.xcassets */; };
 		E71DF4A01CD243FD008DF0DC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E71DF49E1CD243FD008DF0DC /* LaunchScreen.storyboard */; };
+		E71DF4AB1CD24435008DF0DC /* JellyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4AA1CD24435008DF0DC /* JellyView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +23,7 @@
 		E71DF49C1CD243FD008DF0DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E71DF49F1CD243FD008DF0DC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E71DF4A11CD243FD008DF0DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E71DF4AA1CD24435008DF0DC /* JellyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JellyView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +43,9 @@
 				E71DF4941CD243FD008DF0DC /* JellyView-Example */,
 				E71DF4931CD243FD008DF0DC /* Products */,
 			);
+			indentWidth = 2;
 			sourceTree = "<group>";
+			tabWidth = 2;
 		};
 		E71DF4931CD243FD008DF0DC /* Products */ = {
 			isa = PBXGroup;
@@ -54,6 +58,7 @@
 		E71DF4941CD243FD008DF0DC /* JellyView-Example */ = {
 			isa = PBXGroup;
 			children = (
+				E71DF4A91CD24435008DF0DC /* JellyView */,
 				E71DF4951CD243FD008DF0DC /* AppDelegate.swift */,
 				E71DF4971CD243FD008DF0DC /* ViewController.swift */,
 				E71DF4991CD243FD008DF0DC /* Main.storyboard */,
@@ -62,6 +67,14 @@
 				E71DF4A11CD243FD008DF0DC /* Info.plist */,
 			);
 			path = "JellyView-Example";
+			sourceTree = "<group>";
+		};
+		E71DF4A91CD24435008DF0DC /* JellyView */ = {
+			isa = PBXGroup;
+			children = (
+				E71DF4AA1CD24435008DF0DC /* JellyView.swift */,
+			);
+			path = JellyView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +150,7 @@
 			files = (
 				E71DF4981CD243FD008DF0DC /* ViewController.swift in Sources */,
 				E71DF4961CD243FD008DF0DC /* AppDelegate.swift in Sources */,
+				E71DF4AB1CD24435008DF0DC /* JellyView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
