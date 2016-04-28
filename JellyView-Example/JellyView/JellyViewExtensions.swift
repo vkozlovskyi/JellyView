@@ -37,35 +37,61 @@ public extension UIPanGestureRecognizer {
 
 public extension UIBezierPath {
   
-  public func jellyPathForLeftPosition(touchPoint : CGPoint) {
+  public func jellyPath(forPosition position : Position, touchPoint : CGPoint) {
+    switch position {
+    case .Left:
+      jellyPathForLeftPosition(touchPoint)
+    case .Right:
+      jellyPathForRightPosition(touchPoint)
+    case .Top:
+      jellyPathForTopPosition(touchPoint)
+    case .Bottom:
+      jellyPathForBottomPosition(touchPoint)
+    }
+  }
+  
+  public func originalPath(forPosition position : Position, touchPoint : CGPoint) {
+    switch position {
+    case .Left:
+      originalPathForLeftPosition(touchPoint)
+    case .Right:
+      originalPathForRightPosition(touchPoint)
+    case .Top:
+      originalPathForTopPosition(touchPoint)
+    case .Bottom:
+      originalPathForBottomPosition(touchPoint)
+    }
+  }
+  
+  private func jellyPathForLeftPosition(touchPoint : CGPoint) {
     
   }
   
-  public func jellyPathForRightPosition(touchPoint : CGPoint) {
+  private func jellyPathForRightPosition(touchPoint : CGPoint) {
     
   }
   
-  public func jellyPathForTopPosition(touchPoint : CGPoint) {
+  private func jellyPathForTopPosition(touchPoint : CGPoint) {
     
   }
   
-  public func jellyPathForBottomPosition(touchPoint : CGPoint) {
+  private func jellyPathForBottomPosition(touchPoint : CGPoint) {
     
   }
   
-  public func originalPathForLeftPosition(touchPoint : CGPoint) {
+  private func originalPathForLeftPosition(touchPoint : CGPoint) {
     
   }
   
-  public func originalPathForRightPosition(touchPoint : CGPoint) {
+  private func originalPathForRightPosition(touchPoint : CGPoint) {
     
   }
   
-  public func originalPathForTopPosition(touchPoint : CGPoint) {
+  private func originalPathForTopPosition(touchPoint : CGPoint) {
     
   }
   
-  public func originalPathForBottomPosition(touchPoint : CGPoint) {
+  private func originalPathForBottomPosition(touchPoint : CGPoint) {
     
   }
   
