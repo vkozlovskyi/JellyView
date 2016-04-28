@@ -19,14 +19,6 @@ public protocol JellyViewDelegate : class {
   func jellyViewActionFired(curtainControl : JellyView)
 }
 
-public extension UIView {
-  public func addJellyView(position: Position) {
-    let jellyView = JellyView(position: position)
-    jellyView.connectGestureRecognizer(toView: self)
-    self.addSubview(jellyView)
-  }
-}
-
 public final class JellyView : UIView {
   
   public var infoView : UIView?
@@ -35,15 +27,22 @@ public final class JellyView : UIView {
   public var viewMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 200.0
   public var offset : CGFloat = 0.0
+  public var jellyColor : UIColor = UIColor.whiteColor() {
+    didSet {
+      shapeLayer.fillColor = jellyColor.CGColor
+    }
+  }
   
   private weak var containerView : UIView?
-  private weak var shapeLayer : CAShapeLayer?
-  private let position : Position
+  private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
+  private let position : Position
+  private var shouldStartDragging : Bool = true
   
   init(position: Position) {
     self.position = position
     super.init(frame: CGRectZero)
+    self.layer.insertSublayer(layer, atIndex: 0)
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -63,3 +62,12 @@ extension JellyView : UIGestureRecognizerDelegate {
     
   }
 }
+
+
+
+
+
+
+
+
+
