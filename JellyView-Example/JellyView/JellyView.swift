@@ -12,22 +12,22 @@ public enum Position {
   case Left, Right, Top, Bottom
 }
 
-public protocol VKJellyViewDelegate : class {
-  func jellyViewShouldStartDragging(jellyView : VKJellyView) -> Bool
-  func jellyViewDidStartDragging(curtainControl : VKJellyView)
-  func jellyViewDidEndDragging(curtainControl : VKJellyView)
-  func jellyViewActionFired(curtainControl : VKJellyView)
+public protocol JellyViewDelegate : class {
+  func jellyViewShouldStartDragging(jellyView : JellyView) -> Bool
+  func jellyViewDidStartDragging(curtainControl : JellyView)
+  func jellyViewDidEndDragging(curtainControl : JellyView)
+  func jellyViewActionFired(curtainControl : JellyView)
 }
 
 public extension UIView {
   public func addJellyView(position: Position) {
-    let jellyView = VKJellyView(position: position)
+    let jellyView = JellyView(position: position)
     jellyView.connectGestureRecognizer(toView: self)
     self.addSubview(jellyView)
   }
 }
 
-public final class VKJellyView : UIView {
+public final class JellyView : UIView {
   
   public var infoView : UIView?
   public var innerPointRatio : CGFloat = 0.4
@@ -51,10 +51,10 @@ public final class VKJellyView : UIView {
   }
 }
 
-extension VKJellyView : UIGestureRecognizerDelegate {
+extension JellyView : UIGestureRecognizerDelegate {
   
   func connectGestureRecognizer(toView view : UIView) {
-    let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(VKJellyView.handlePanGesture(_:)))
+    let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(JellyView.handlePanGesture(_:)))
     gestureRecognizer.delegate = self
     view.addGestureRecognizer(gestureRecognizer)
   }
