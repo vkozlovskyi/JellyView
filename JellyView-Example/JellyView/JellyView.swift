@@ -19,6 +19,13 @@ public protocol JellyViewDelegate : class {
   func jellyViewActionFired(curtainControl : JellyView)
 }
 
+public struct PathModifiers {
+  var innerPointRatio : CGFloat
+  var outerPointRatio : CGFloat
+  var superviewWidth : CGFloat
+  var superviewHeight : CGFloat
+}
+
 public final class JellyView : UIView {
   
   public weak var delegate : JellyViewDelegate?
@@ -34,6 +41,7 @@ public final class JellyView : UIView {
     }
   }
   
+  private let pathModifiers : PathModifiers
   private weak var containerView : UIView?
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
@@ -49,6 +57,7 @@ public final class JellyView : UIView {
   
   init(position: Position) {
     self.position = position
+    self.pathModifiers = PathModifiers(innerPointRatio: 0, outerPointRatio: 0, superviewWidth: 0, superviewHeight: 0)
     super.init(frame: CGRectZero)
     self.layer.insertSublayer(layer, atIndex: 0)
   }
@@ -82,11 +91,18 @@ extension JellyView : UIGestureRecognizerDelegate {
   }
   
   private func stretchJellyView(let toPoint touchPoint :CGPoint) {
-    beizerPath.jellyPath(forPosition: position, touchPoint: touchPoint)
+    guard let pathModifiers = currentPathModifiers() else { return }
+    beizerPath.jellyPath(forPosition: position, touchPoint: touchPoint, pathModifiers: pathModifiers)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = beizerPath.CGPath
     CATransaction.commit()
+  }
+  
+  private func currentPathModifiers() -> PathModifiers? {
+    guard let width = self.superview?.frame.size.width else { return nil }
+    guard let height = self.superview?.frame.size.height else { return nil }
+    return PathModifiers(innerPointRatio: innerPointRatio, outerPointRatio: outerPointRatio, superviewWidth: width, superviewHeight: height)
   }
   
 }
@@ -96,6 +112,7 @@ extension JellyView : UIGestureRecognizerDelegate {
 extension JellyView {
   
   func animateJellyViewToInitialPosition(let touchPoint touchPoint :CGPoint) {
+    guard let pathModifiers = currentPathModifiers() else { return }
     CATransaction.begin()
     self.springAnimationWillStart()
     CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
@@ -104,7 +121,7 @@ extension JellyView {
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = beizerPath.CGPath
-    beizerPath.originalPath(forPosition: position, touchPoint: touchPoint)
+    beizerPath.originalPath(forPosition: position, touchPoint: touchPoint, pathModifiers: pathModifiers)
     springAnimation.toValue = beizerPath.CGPath
     CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
     shapeLayer.path = beizerPath.CGPath
