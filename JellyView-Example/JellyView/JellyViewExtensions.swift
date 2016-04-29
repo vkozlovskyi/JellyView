@@ -12,9 +12,12 @@ public extension UIView {
   
   public func addJellyView(position: Position) {
     let jellyView = JellyView(position: position)
+    jellyView.backgroundColor = UIColor.blueColor()
+    jellyView.jellyColor = UIColor.greenColor()
     jellyView.connectGestureRecognizer(toView: self)
     self.addSubview(jellyView)
   }
+  
 }
 
 public extension UIPanGestureRecognizer {
@@ -33,66 +36,16 @@ public extension UIPanGestureRecognizer {
     }
     return touchPoint
   }
+  
 }
 
 public extension UIBezierPath {
   
-  public func jellyPath(forPosition position : Position, touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    switch position {
-    case .Left:
-      jellyPathForLeftPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Right:
-      jellyPathForRightPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Top:
-      jellyPathForTopPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Bottom:
-      jellyPathForBottomPosition(touchPoint, pathModifiers: pathModifiers)
-    }
-  }
-  
-  public func originalPath(forPosition position : Position, touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    switch position {
-    case .Left:
-      originalPathForLeftPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Right:
-      originalPathForRightPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Top:
-      originalPathForTopPosition(touchPoint, pathModifiers: pathModifiers)
-    case .Bottom:
-      originalPathForBottomPosition(touchPoint, pathModifiers: pathModifiers)
-    }
-  }
-  
-  private func jellyPathForLeftPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func jellyPathForRightPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func jellyPathForTopPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func jellyPathForBottomPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func originalPathForLeftPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func originalPathForRightPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func originalPathForTopPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
-  }
-  
-  private func originalPathForBottomPosition(touchPoint : CGPoint, pathModifiers : PathModifiers) {
-    
+  public func jellyPath(pm : PathModifiers) {
+    self.removeAllPoints()
+    self.moveToPoint(pm.fstStartPoint)
+    self.addCurveToPoint(pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
+    self.addCurveToPoint(pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
   }
   
 }

@@ -20,10 +20,14 @@ public protocol JellyViewDelegate : class {
 }
 
 public struct PathModifiers {
-  var innerPointRatio : CGFloat
-  var outerPointRatio : CGFloat
-  var superviewWidth : CGFloat
-  var superviewHeight : CGFloat
+  var fstStartPoint : CGPoint
+  var fstEndPoint : CGPoint
+  var fstControlPoint1 : CGPoint
+  var fstControlPoint2 : CGPoint
+  var sndStartPoint : CGPoint
+  var sndEndPoint : CGPoint
+  var sndControlPoint1 : CGPoint
+  var sndControlPoint2 : CGPoint
 }
 
 public final class JellyView : UIView {
@@ -32,21 +36,24 @@ public final class JellyView : UIView {
   public var infoView : UIView?
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.2
-  public var viewMass : CGFloat = 1.0
-  public var springStiffness : CGFloat = 200.0
-  public var offset : CGFloat = 0.0
+  public var stiffness : CGFloat = 1.0
   public var jellyColor : UIColor = UIColor.whiteColor() {
     didSet {
       shapeLayer.fillColor = jellyColor.CGColor
     }
   }
   
-  private let pathModifiers : PathModifiers
+  override public var frame: CGRect {
+    didSet {
+      self.frameDidChanged()
+    }
+  }
+  
+  private var touchPoint = CGPointZero
   private weak var containerView : UIView?
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
   private let position : Position
-  private var displayLink : CADisplayLink?
   private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging(self) {
       return shouldStartDragging
@@ -57,9 +64,9 @@ public final class JellyView : UIView {
   
   init(position: Position) {
     self.position = position
-    self.pathModifiers = PathModifiers(innerPointRatio: 0, outerPointRatio: 0, superviewWidth: 0, superviewHeight: 0)
     super.init(frame: CGRectZero)
-    self.layer.insertSublayer(layer, atIndex: 0)
+    self.backgroundColor = UIColor.clearColor()
+    self.layer.insertSublayer(shapeLayer, atIndex: 0)
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -79,79 +86,136 @@ extension JellyView : UIGestureRecognizerDelegate {
   @objc private func handlePanGesture(let pan : UIPanGestureRecognizer) {
     
     if shouldStartDragging {
-      
-      let touchPoint = pan.touchPoint(forPosition: position)
-      
+      touchPoint = pan.touchPoint(forPosition: position)
       if (pan.state == .Began || pan.state == .Changed) {
-        stretchJellyView(toPoint: touchPoint)
+        updateFrame()
       } else if (pan.state == .Ended || pan.state == .Cancelled) {
-        animateJellyViewToInitialPosition(touchPoint: touchPoint)
+        animateToInitialPosition()
       }
     }
+    
   }
   
-  private func stretchJellyView(let toPoint touchPoint :CGPoint) {
+  private func stretchJellyView() {
     guard let pathModifiers = currentPathModifiers() else { return }
-    beizerPath.jellyPath(forPosition: position, touchPoint: touchPoint, pathModifiers: pathModifiers)
+    beizerPath.jellyPath(pathModifiers)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = beizerPath.CGPath
     CATransaction.commit()
   }
-  
-  private func currentPathModifiers() -> PathModifiers? {
-    guard let width = self.superview?.frame.size.width else { return nil }
-    guard let height = self.superview?.frame.size.height else { return nil }
-    return PathModifiers(innerPointRatio: innerPointRatio, outerPointRatio: outerPointRatio, superviewWidth: width, superviewHeight: height)
-  }
-  
+
 }
 
-// MARK: - Spring Animation
+// MARK: - Frame Update
+
 
 extension JellyView {
   
-  func animateJellyViewToInitialPosition(let touchPoint touchPoint :CGPoint) {
-    guard let pathModifiers = currentPathModifiers() else { return }
-    CATransaction.begin()
-    self.springAnimationWillStart()
-    CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
-    let springAnimation = CASpringAnimation(keyPath: "path")
-    springAnimation.mass = viewMass
-    springAnimation.stiffness = springStiffness
-    springAnimation.duration = springAnimation.settlingDuration
-    springAnimation.fromValue = beizerPath.CGPath
-    beizerPath.originalPath(forPosition: position, touchPoint: touchPoint, pathModifiers: pathModifiers)
-    springAnimation.toValue = beizerPath.CGPath
-    CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
-    shapeLayer.path = beizerPath.CGPath
-    shapeLayer.addAnimation(springAnimation, forKey: "path")
-    CATransaction.commit()
-  }
-  
-  private func springAnimationWillStart() {
-    if displayLink == nil {
-      print("started")
-      displayLink = CADisplayLink(target: self, selector: #selector(JellyView.springAnimationInProgress))
-      displayLink!.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
+  private func updateFrame() {
+    switch position {
+    case .Left:
+      return updateFrameForLeftPostion()
+    case .Right:
+      return updateFrameForRightPostion()
+    case .Top:
+      return updateFrameForTopPostion()
+    case .Bottom:
+      return updateFrameForBottomPostion()
     }
-  }
-  
-  @objc private func springAnimationDidFinish() {
-    if displayLink != nil {
-      print("finished")
-      displayLink?.invalidate()
-      displayLink = nil
-    }
-  }
-  
-  @objc private func springAnimationInProgress() {
     
+  }
+  
+  private func animateToInitialPosition() {
+//    [[UIView .animateWithDuration(<#T##duration: NSTimeInterval##NSTimeInterval#>, delay: <#T##NSTimeInterval#>, usingSpringWithDamping: <#T##CGFloat#>, initialSpringVelocity: <#T##CGFloat#>, options: <#T##UIViewAnimationOptions#>, animations: <#T##() -> Void#>, completion: <#T##((Bool) -> Void)?##((Bool) -> Void)?##(Bool) -> Void#>)]]
+  }
+  
+  private func frameDidChanged() {
+    stretchJellyView()
+  }
+  
+  private func updateFrameForLeftPostion() {
+    guard let superview = self.superview else { return }
+    let stretchedSize = stiffness * touchPoint.x
+    self.frame = CGRect(x: 0.0,
+                        y: 0.0,
+                    width: stretchedSize,
+                   height: superview.frame.size.height)
+    print(NSStringFromCGRect(self.frame))
+  }
+  
+  private func updateFrameForRightPostion() {
+    // TODO:
+  }
+  
+  private func updateFrameForTopPostion() {
+    // TODO:
+  }
+  
+  private func updateFrameForBottomPostion() {
+    // TODO:
   }
   
 }
 
 
+// MARK: - Calculate Path Modifiers
 
 
+extension JellyView {
+  
+  private func currentPathModifiers() -> PathModifiers? {
+    switch position {
+    case .Left:
+      return leftPathModifiers()
+    case .Right:
+      return rightPathModifiers()
+    case .Top:
+      return topPathModifiers()
+    case .Bottom:
+      return bottomPathModifiers()
+    }
+    
+  }
+  
+  private func leftPathModifiers() -> PathModifiers? {
+    
+    guard let superview = self.superview else { return nil }
+    let height = CGRectGetHeight(superview.frame)
+    let outerDelta = outerPointRatio * height
+    
+    let fstStartPoint : CGPoint = CGPointZero
+    let fstEndPoint : CGPoint = CGPointMake(self.frame.size.width, touchPoint.y)
+    let fstControlPoint1 : CGPoint = CGPointMake(0, touchPoint.y * innerPointRatio)
+    let fstControlPoint2 : CGPoint = CGPointMake(self.frame.size.width, touchPoint.y - outerDelta)
+    let sndStartPoint : CGPoint = fstEndPoint
+    let sndEndPoint : CGPoint = CGPointMake(0, height)
+    let sndControlPoint1 : CGPoint = CGPointMake(self.frame.size.width, touchPoint.y + outerDelta)
+    let sndControlPoint2 : CGPoint = CGPointMake(0, touchPoint.y + (height - touchPoint.y) * (1.0 - innerPointRatio))
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                        fstEndPoint: fstEndPoint,
+                                   fstControlPoint1: fstControlPoint1,
+                                   fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                        sndEndPoint: sndEndPoint,
+                                   sndControlPoint1: sndControlPoint1,
+                                   sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
+    
+  }
+  
+  private func rightPathModifiers() -> PathModifiers { // TODO:
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
+  
+  private func topPathModifiers() -> PathModifiers { // TODO:
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
+  
+  private func bottomPathModifiers() -> PathModifiers { // TODO:
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
+}
 
