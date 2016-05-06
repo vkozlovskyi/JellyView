@@ -11,8 +11,8 @@ import UIKit
 public extension UIView {
   
   public func addJellyView(position: Position) {
-    let jellyView = JellyView(position: position)
-    jellyView.backgroundColor = UIColor.blueColor()
+    let jellyView = JellyView(position: position, frame: self.bounds)
+    jellyView.backgroundColor = UIColor.clearColor()
     jellyView.jellyColor = UIColor.greenColor()
     jellyView.connectGestureRecognizer(toView: self)
     self.addSubview(jellyView)
