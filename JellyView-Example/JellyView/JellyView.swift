@@ -39,9 +39,9 @@ public final class JellyView : UIView {
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
   private weak var containerView : UIView?
-
+  
   private let position : Position
-  private var displayLink : CADisplayLink?
+  private var displayLink : CADisplayLink!
   
   private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging(self) {
@@ -54,8 +54,15 @@ public final class JellyView : UIView {
   init(position: Position, frame: CGRect) {
     self.position = position
     super.init(frame: frame)
+    setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
+  }
+  
+  private func setupDisplayLink() {
+    displayLink = CADisplayLink(target: self, selector: #selector(JellyView.springAnimationInProgress))
+    displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSRunLoopCommonModes)
+    displayLink.paused = true
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -110,10 +117,10 @@ extension JellyView {
   
   func animateToInitialPosition() {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
-                                                            touchPoint: touchPoint,
-                                                            jellyFrame: self.frame,
-                                                       outerPointRatio: outerPointRatio,
-                                                       innerPointRatio: innerPointRatio)
+                                                           touchPoint: touchPoint,
+                                                           jellyFrame: self.frame,
+                                                           outerPointRatio: outerPointRatio,
+                                                           innerPointRatio: innerPointRatio)
     CATransaction.begin()
     self.springAnimationWillStart()
     CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
@@ -130,19 +137,11 @@ extension JellyView {
   }
   
   private func springAnimationWillStart() {
-    if displayLink == nil {
-      print("started")
-      displayLink = CADisplayLink(target: self, selector: #selector(JellyView.springAnimationInProgress))
-      displayLink!.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSDefaultRunLoopMode)
-    }
+    displayLink.paused = false
   }
   
   @objc private func springAnimationDidFinish() {
-    if displayLink != nil {
-      print("finished")
-      displayLink?.invalidate()
-      displayLink = nil
-    }
+    displayLink.paused = true
   }
   
   @objc private func springAnimationInProgress() {
@@ -151,3 +150,42 @@ extension JellyView {
   
 }
 
+// Mark: - Coordinates Calculation
+
+extension JellyView {
+  
+  private func pointFromCubicBeizerCurve(delta t : CGFloat,
+                                   startPoint p0 : CGFloat,
+                                controlPoint1 p1 : CGFloat,
+                                controlPoint2 p2 : CGFloat,
+                                     endPoint p3 : CGFloat) -> CGPoint {
+    
+    let x = coordinateFromCubicBeizerCurve(delta: t,
+                                      startPoint: p0,
+                                   controlPoint1: p1,
+                                   controlPoint2: p2,
+                                        endPoint: p3)
+    
+    let y = coordinateFromCubicBeizerCurve(delta: t,
+                                      startPoint: p0,
+                                   controlPoint1: p1,
+                                   controlPoint2: p2,
+                                        endPoint: p3)
+    
+    return CGPointMake(x, y)
+  }
+  
+  private func coordinateFromCubicBeizerCurve(delta t : CGFloat,
+                                        startPoint p0 : CGFloat,
+                                     controlPoint1 p1 : CGFloat,
+                                     controlPoint2 p2 : CGFloat,
+                                          endPoint p3 : CGFloat) -> CGFloat {
+    
+    // I had to split expression to several parts to stop the compiler's whining
+    var x = pow(1 - t, 3) * p0
+    x += 3 * pow(1 - t, 2) * t * p1
+    x += 3 * (1 - t) * pow(t, 2) * p2
+    x += pow(t, 3) * p3
+    return x
+  }
+}

@@ -18,6 +18,9 @@ public extension UIView {
     self.addSubview(jellyView)
   }
   
+  public func removeJellyView() {
+    // TODO: implement
+  }
 }
 
 public extension UIPanGestureRecognizer {
