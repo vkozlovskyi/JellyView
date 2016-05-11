@@ -81,6 +81,35 @@ public extension PathModifiers {
                                                innerPointRatio: innerPointRatio)
     }
   }
+  
+  static func expandedPathModifiers(forPosition position: Position,
+                                               touchPoint: CGPoint,
+                                               jellyFrame: CGRect,
+                                               outerPointRatio: CGFloat,
+                                               innerPointRatio: CGFloat) -> PathModifiers {
+    switch position {
+    case .Left:
+      return PathModifiers.expandedLeftPathModifiers(touchPoint: touchPoint,
+                                                   jellyFrame: jellyFrame,
+                                                   outerPointRatio: outerPointRatio,
+                                                   innerPointRatio: innerPointRatio)
+    case .Right:
+      return PathModifiers.expandedRightPathModifiers(touchPoint: touchPoint,
+                                                     jellyFrame: jellyFrame,
+                                                     outerPointRatio: outerPointRatio,
+                                                     innerPointRatio: innerPointRatio)
+    case .Top:
+      return PathModifiers.expandedTopPathModifiers(touchPoint: touchPoint,
+                                                  jellyFrame: jellyFrame,
+                                                  outerPointRatio: outerPointRatio,
+                                                  innerPointRatio: innerPointRatio)
+    case .Bottom:
+      return PathModifiers.expandedBottomPathModifiers(touchPoint: touchPoint,
+                                                     jellyFrame: jellyFrame,
+                                                     outerPointRatio: outerPointRatio,
+                                                     innerPointRatio: innerPointRatio)
+    }
+  }
 }
 
 // MARK: - PathModifiers for touchPoint
@@ -197,4 +226,61 @@ private extension PathModifiers {
     return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
   }
   
+}
+
+// MARK: - PathModifiers for final position
+
+private extension PathModifiers {
+  
+  static func expandedLeftPathModifiers(touchPoint touchPoint: CGPoint,
+                                                 jellyFrame: CGRect,
+                                                 outerPointRatio: CGFloat,
+                                                 innerPointRatio: CGFloat) -> PathModifiers {
+    
+    let extraSpace = CGRectGetHeight(jellyFrame) / 4
+    let height = CGRectGetHeight(jellyFrame)
+    let width = CGRectGetWidth(jellyFrame) * 1.6
+    let centerY = height / 2
+    
+    let fstStartPoint : CGPoint = CGPointMake(0, -extraSpace)
+    let fstEndPoint : CGPoint = CGPointMake(width, centerY)
+    let fstControlPoint1 : CGPoint = CGPointMake(width / 2, -extraSpace)
+    let fstControlPoint2 : CGPoint = CGPointMake(width, centerY / 2)
+    let sndStartPoint : CGPoint = fstEndPoint
+    let sndEndPoint : CGPoint = CGPointMake(0, height + extraSpace)
+    let sndControlPoint1 : CGPoint = CGPointMake(width, centerY + extraSpace)
+    let sndControlPoint2 : CGPoint = CGPointMake(width / 2, height + extraSpace)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
+  }
+  
+  static func expandedRightPathModifiers(touchPoint touchPoint: CGPoint,
+                                                   jellyFrame: CGRect,
+                                                   outerPointRatio: CGFloat,
+                                                   innerPointRatio: CGFloat) -> PathModifiers {
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
+  
+  static func expandedTopPathModifiers(touchPoint touchPoint: CGPoint,
+                                                jellyFrame: CGRect,
+                                                outerPointRatio: CGFloat,
+                                                innerPointRatio: CGFloat) -> PathModifiers {
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
+  
+  static func expandedBottomPathModifiers(touchPoint touchPoint: CGPoint,
+                                                   jellyFrame: CGRect,
+                                                   outerPointRatio: CGFloat,
+                                                   innerPointRatio: CGFloat) -> PathModifiers {
+    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+  }
 }

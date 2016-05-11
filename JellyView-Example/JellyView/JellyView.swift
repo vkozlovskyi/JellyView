@@ -85,15 +85,13 @@ extension JellyView : UIGestureRecognizerDelegate {
   @objc private func handlePanGesture(let pan : UIPanGestureRecognizer) {
     
     if shouldStartDragging {
-      
-      touchPoint = pan.touchPoint(forPosition: position)
+      touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
       if (pan.state == .Began || pan.state == .Changed) {
         stretchJellyView()
       } else if (pan.state == .Ended || pan.state == .Cancelled) {
         animateToInitialPosition()
       }
     }
-    
   }
   
   private func stretchJellyView() {
@@ -111,7 +109,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   
 }
 
-// MARK: - Spring Animation
+// MARK: - Animation
 
 extension JellyView {
   
@@ -134,6 +132,10 @@ extension JellyView {
     CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
     shapeLayer.addAnimation(springAnimation, forKey: "path")
     CATransaction.commit()
+  }
+  
+  func animateToFinalPosition() {
+    
   }
   
   private func springAnimationWillStart() {

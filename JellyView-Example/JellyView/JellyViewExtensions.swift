@@ -21,21 +21,22 @@ public extension UIView {
   public func removeJellyView() {
     // TODO: implement
   }
+  
 }
 
 public extension UIPanGestureRecognizer {
   
-  public func touchPoint(forPosition position : Position) -> CGPoint {
+  public func touchPoint(forPosition position : Position, flexibility flx : CGFloat) -> CGPoint {
     var touchPoint = CGPointZero
     switch position {
     case .Left:
-      touchPoint = CGPointMake(self.translationInView(self.view).x, self.locationInView(self.view).y)
+      touchPoint = CGPointMake(self.translationInView(self.view).x * flx, self.locationInView(self.view).y)
     case .Right:
-      touchPoint = CGPointMake(self.translationInView(self.view).x, self.locationInView(self.view).y)
+      touchPoint = CGPointMake(self.translationInView(self.view).x * flx, self.locationInView(self.view).y)
     case .Top:
-      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y)
+      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y * flx)
     case .Bottom:
-      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y)
+      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y * flx)
     }
     return touchPoint
   }
@@ -49,6 +50,7 @@ public extension UIBezierPath {
     self.moveToPoint(pm.fstStartPoint)
     self.addCurveToPoint(pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
     self.addCurveToPoint(pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
+    self.closePath()
   }
   
 }
