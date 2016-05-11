@@ -23,26 +23,26 @@ public final class JellyView : UIView {
   
   public weak var delegate : JellyViewDelegate?
   public var infoView : UIView?
-  public var jellyColor : UIColor = UIColor.whiteColor() {
-    didSet {
-      shapeLayer.fillColor = jellyColor.CGColor
-    }
-  }
+//  public var jellyColor : UIColor = UIColor.whiteColor() {
+//    didSet {
+//      shapeLayer.fillColor = jellyColor.CGColor
+//    }
+//  }
   public var triggerThreshold : CGFloat = 0.4
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
   public var flexibility : CGFloat = 0.7
   public var viewMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 200.0
-  public var colorsArray : Array<UIColor>?
   
   private var touchPoint = CGPointZero
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
   private weak var containerView : UIView?
   private let position : Position
-  private var colorIndex : NSInteger = 0
   private var displayLink : CADisplayLink!
+  private var colorIndex : NSInteger = 0
+  private let colorsArray : Array<UIColor>
   private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
@@ -51,14 +51,15 @@ public final class JellyView : UIView {
     }
   }
   
-  init(position: Position, forView view: UIView) {
+  init(position: Position, forView view: UIView, colors: Array<UIColor>) {
     self.position = position
+    self.colorsArray = colors
     super.init(frame: view.bounds)
+    shapeLayer.fillColor = colorsArray[colorIndex].CGColor
     connectGestureRecognizer(toView: view)
     setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
-    view.addSubview(self)
   }
   
   private func setupDisplayLink() {
@@ -74,7 +75,27 @@ public final class JellyView : UIView {
   public override func hitTest(point: CGPoint, withEvent event: UIEvent?) -> UIView? {
     return self.superview
   }
+  
 }
+
+extension JellyView {
+  
+  private func updateColors() {
+    guard let superview = self.superview else { return }
+    let currentColor = colorsArray[colorIndex]
+    superview.backgroundColor = currentColor
+    
+    colorIndex += 1
+    if colorIndex > colorsArray.count - 1 {
+      colorIndex = 0
+    }
+    
+    shapeLayer.fillColor = colorsArray[colorIndex].CGColor
+  }
+  
+}
+
+// MARK: - Stretching JellyView
 
 extension JellyView : UIGestureRecognizerDelegate {
   
@@ -91,9 +112,9 @@ extension JellyView : UIGestureRecognizerDelegate {
       
       if (pan.state == .Began) {
         self.delegate?.jellyViewDidStartDragging?(self)
-        stretchJellyView()
+        modifyShapeLayerForTouch()
       } else if (pan.state == .Changed) {
-        stretchJellyView()
+        modifyShapeLayerForTouch()
       } else if (pan.state == .Ended || pan.state == .Cancelled) {
         
         self.delegate?.jellyViewDidEndDragging?(self)
@@ -126,12 +147,25 @@ extension JellyView : UIGestureRecognizerDelegate {
     }
   }
   
-  private func stretchJellyView() {
+  private func modifyShapeLayerForTouch() {
     let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: self.frame,
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
+    applyPathModifiers(pathModifiers)
+  }
+  
+  private func modifyShapeLayerForInitialPosition() {
+    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
+                                                           touchPoint: touchPoint,
+                                                           jellyFrame: self.frame,
+                                                           outerPointRatio: outerPointRatio,
+                                                           innerPointRatio: innerPointRatio)
+    applyPathModifiers(pathModifiers)
+  }
+  
+  private func applyPathModifiers(pathModifiers : PathModifiers) {
     beizerPath.jellyPath(pathModifiers)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
@@ -141,7 +175,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   
 }
 
-// MARK: - Animation
+// MARK: - Animations
 
 extension JellyView {
   
@@ -152,8 +186,7 @@ extension JellyView {
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
-    self.animationWillStart()
-    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    self.animationToInitialWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
     springAnimation.mass = viewMass
     springAnimation.stiffness = springStiffness
@@ -161,7 +194,7 @@ extension JellyView {
     springAnimation.fromValue = beizerPath.CGPath
     beizerPath.jellyPath(pathModifiers)
     shapeLayer.path = beizerPath.CGPath
-    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    CATransaction.setCompletionBlock { self.animationToInitialDidFinish() }
     shapeLayer.addAnimation(springAnimation, forKey: "path")
     CATransaction.commit()
   }
@@ -173,8 +206,7 @@ extension JellyView {
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
-    self.animationWillStart()
-    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    self.animationToFinalWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
     springAnimation.mass = viewMass
     springAnimation.damping = 1000
@@ -183,18 +215,28 @@ extension JellyView {
     springAnimation.fromValue = beizerPath.CGPath
     beizerPath.jellyPath(pathModifiers)
     shapeLayer.path = beizerPath.CGPath
-    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    CATransaction.setCompletionBlock { self.animationToFinalDidFinish() }
     shapeLayer.addAnimation(springAnimation, forKey: "path")
     CATransaction.commit()
 
   }
   
-  private func animationWillStart() {
+  private func animationToInitialWillStart() {
     displayLink.paused = false
   }
   
-  @objc private func animationDidFinish() {
+  @objc private func animationToInitialDidFinish() {
     displayLink.paused = true
+  }
+  
+  private func animationToFinalWillStart() {
+    displayLink.paused = false
+  }
+  
+  @objc private func animationToFinalDidFinish() {
+    displayLink.paused = true
+    updateColors()
+    modifyShapeLayerForInitialPosition()
   }
   
   @objc private func animationInProgress() {
@@ -203,7 +245,7 @@ extension JellyView {
   
 }
 
-// Mark: - Coordinates Calculation
+// MARK: - Coordinates Calculation
 
 extension JellyView {
   
@@ -241,4 +283,5 @@ extension JellyView {
     x += pow(t, 3) * p3
     return x
   }
+  
 }
