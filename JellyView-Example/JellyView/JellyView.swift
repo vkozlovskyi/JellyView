@@ -52,12 +52,14 @@ public final class JellyView : UIView {
     }
   }
   
-  init(position: Position, frame: CGRect) {
+  init(position: Position, forView view: UIView) {
     self.position = position
-    super.init(frame: frame)
+    super.init(frame: view.bounds)
+    connectGestureRecognizer(toView: view)
     setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
+    view.addSubview(self)
   }
   
   private func setupDisplayLink() {

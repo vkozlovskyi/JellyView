@@ -8,22 +8,6 @@
 
 import UIKit
 
-public extension UIView {
-  
-  public func addJellyView(position: Position) {
-    let jellyView = JellyView(position: position, frame: self.bounds)
-    jellyView.backgroundColor = UIColor.clearColor()
-    jellyView.jellyColor = UIColor.greenColor()
-    jellyView.connectGestureRecognizer(toView: self)
-    self.addSubview(jellyView)
-  }
-  
-  public func removeJellyView() {
-    // TODO: implement
-  }
-  
-}
-
 public extension UIPanGestureRecognizer {
   
   public func touchPoint(forPosition position : Position, flexibility flx : CGFloat) -> CGPoint {
@@ -54,4 +38,3 @@ public extension UIBezierPath {
   }
   
 }
-
