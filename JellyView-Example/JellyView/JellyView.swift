@@ -43,6 +43,7 @@ public final class JellyView : UIView {
   private var displayLink : CADisplayLink!
   private var colorIndex : NSInteger = 0
   private let colorsArray : Array<UIColor>
+  private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
@@ -55,8 +56,8 @@ public final class JellyView : UIView {
     self.position = position
     self.colorsArray = colors
     super.init(frame: view.bounds)
-    shapeLayer.fillColor = colorsArray[colorIndex].CGColor
     connectGestureRecognizer(toView: view)
+    shapeLayer.fillColor = colorsArray[colorIndex].CGColor
     setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
@@ -100,7 +101,7 @@ extension JellyView {
 extension JellyView : UIGestureRecognizerDelegate {
   
   func connectGestureRecognizer(toView view : UIView) {
-    let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(JellyView.handlePanGesture(_:)))
+    gestureRecognizer.addTarget(self, action: #selector(JellyView.handlePanGesture(_:)))
     gestureRecognizer.delegate = self
     view.addGestureRecognizer(gestureRecognizer)
   }
@@ -230,11 +231,13 @@ extension JellyView {
   }
   
   private func animationToFinalWillStart() {
+    gestureRecognizer.enabled = false
     displayLink.paused = false
   }
   
   @objc private func animationToFinalDidFinish() {
     displayLink.paused = true
+    gestureRecognizer.enabled = true
     updateColors()
     modifyShapeLayerForInitialPosition()
   }
