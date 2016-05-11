@@ -29,6 +29,7 @@ public final class JellyView : UIView {
     }
   }
   
+  public var triggerThreshold : CGFloat = 0.4
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
   public var flexibility : CGFloat = 1.0
@@ -89,8 +90,31 @@ extension JellyView : UIGestureRecognizerDelegate {
       if (pan.state == .Began || pan.state == .Changed) {
         stretchJellyView()
       } else if (pan.state == .Ended || pan.state == .Cancelled) {
-        animateToInitialPosition()
+        if shouldInitiateAction() {
+          animateToFinalPosition()
+        } else {
+          animateToInitialPosition()
+        }
       }
+    }
+  }
+  
+  private func shouldInitiateAction() -> Bool {
+    var size : CGFloat
+    var currentProggress : CGFloat
+    if position == .Left || position == .Right {
+      size = self.frame.size.width
+      currentProggress = touchPoint.x
+    } else {
+      size = self.frame.size.height
+      currentProggress = touchPoint.y
+    }
+    
+    let maxProggress = size * triggerThreshold
+    if currentProggress >= maxProggress {
+      return true
+    } else {
+      return false
     }
   }
   
