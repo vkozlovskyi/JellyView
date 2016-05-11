@@ -12,11 +12,11 @@ public enum Position {
   case Left, Right, Top, Bottom
 }
 
-public protocol JellyViewDelegate : class {
-  func jellyViewShouldStartDragging(jellyView : JellyView) -> Bool
-  func jellyViewDidStartDragging(curtainControl : JellyView)
-  func jellyViewDidEndDragging(curtainControl : JellyView)
-  func jellyViewActionFired(curtainControl : JellyView)
+@objc public protocol JellyViewDelegate : class {
+  optional func jellyViewShouldStartDragging(jellyView : JellyView) -> Bool
+  optional func jellyViewDidStartDragging(curtainControl : JellyView)
+  optional func jellyViewDidEndDragging(curtainControl : JellyView)
+  optional func jellyViewActionFired(curtainControl : JellyView)
 }
 
 public final class JellyView : UIView {
@@ -28,24 +28,23 @@ public final class JellyView : UIView {
       shapeLayer.fillColor = jellyColor.CGColor
     }
   }
-  
   public var triggerThreshold : CGFloat = 0.4
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
-  public var flexibility : CGFloat = 1.0
+  public var flexibility : CGFloat = 0.7
   public var viewMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 200.0
+  public var colorsArray : Array<UIColor>?
   
   private var touchPoint = CGPointZero
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
   private weak var containerView : UIView?
-  
   private let position : Position
+  private var colorIndex : NSInteger = 0
   private var displayLink : CADisplayLink!
-  
   private var shouldStartDragging : Bool {
-    if let shouldStartDragging = delegate?.jellyViewShouldStartDragging(self) {
+    if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
     } else {
       return true
@@ -63,7 +62,7 @@ public final class JellyView : UIView {
   }
   
   private func setupDisplayLink() {
-    displayLink = CADisplayLink(target: self, selector: #selector(JellyView.springAnimationInProgress))
+    displayLink = CADisplayLink(target: self, selector: #selector(JellyView.animationInProgress))
     displayLink.addToRunLoop(NSRunLoop.mainRunLoop(), forMode: NSRunLoopCommonModes)
     displayLink.paused = true
   }
@@ -89,9 +88,16 @@ extension JellyView : UIGestureRecognizerDelegate {
     
     if shouldStartDragging {
       touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
-      if (pan.state == .Began || pan.state == .Changed) {
+      
+      if (pan.state == .Began) {
+        self.delegate?.jellyViewDidStartDragging?(self)
+        stretchJellyView()
+      } else if (pan.state == .Changed) {
         stretchJellyView()
       } else if (pan.state == .Ended || pan.state == .Cancelled) {
+        
+        self.delegate?.jellyViewDidEndDragging?(self)
+        
         if shouldInitiateAction() {
           animateToFinalPosition()
         } else {
@@ -146,8 +152,8 @@ extension JellyView {
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
-    self.springAnimationWillStart()
-    CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
+    self.animationWillStart()
+    CATransaction.setCompletionBlock { self.animationDidFinish() }
     let springAnimation = CASpringAnimation(keyPath: "path")
     springAnimation.mass = viewMass
     springAnimation.stiffness = springStiffness
@@ -155,24 +161,43 @@ extension JellyView {
     springAnimation.fromValue = beizerPath.CGPath
     beizerPath.jellyPath(pathModifiers)
     shapeLayer.path = beizerPath.CGPath
-    CATransaction.setCompletionBlock { self.springAnimationDidFinish() }
+    CATransaction.setCompletionBlock { self.animationDidFinish() }
     shapeLayer.addAnimation(springAnimation, forKey: "path")
     CATransaction.commit()
   }
   
   func animateToFinalPosition() {
-    
+    let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
+                                                           touchPoint: touchPoint,
+                                                           jellyFrame: self.frame,
+                                                           outerPointRatio: outerPointRatio,
+                                                           innerPointRatio: innerPointRatio)
+    CATransaction.begin()
+    self.animationWillStart()
+    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    let springAnimation = CASpringAnimation(keyPath: "path")
+    springAnimation.mass = viewMass
+    springAnimation.damping = 1000
+    springAnimation.stiffness = springStiffness
+    springAnimation.duration = springAnimation.settlingDuration
+    springAnimation.fromValue = beizerPath.CGPath
+    beizerPath.jellyPath(pathModifiers)
+    shapeLayer.path = beizerPath.CGPath
+    CATransaction.setCompletionBlock { self.animationDidFinish() }
+    shapeLayer.addAnimation(springAnimation, forKey: "path")
+    CATransaction.commit()
+
   }
   
-  private func springAnimationWillStart() {
+  private func animationWillStart() {
     displayLink.paused = false
   }
   
-  @objc private func springAnimationDidFinish() {
+  @objc private func animationDidFinish() {
     displayLink.paused = true
   }
   
-  @objc private func springAnimationInProgress() {
+  @objc private func animationInProgress() {
     
   }
   
