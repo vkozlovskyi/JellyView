@@ -12,7 +12,8 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    let jellyView = JellyView(position: .Left, forView: self.view, colors: colorsArray())
+    self.view.backgroundColor = colorsArray().last
+    let jellyView = JellyView(position: .Right, forView: self.view, colors: colorsArray())
     self.view.addSubview(jellyView)
   }
   
@@ -25,7 +26,6 @@ class ViewController: UIViewController {
       UIColor(red: 255.0/255.0, green: 188.0/255.0, blue: 125.0/255.0, alpha: 1.0)]
     return colorsArray
   }
-
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()

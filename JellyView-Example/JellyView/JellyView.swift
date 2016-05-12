@@ -23,17 +23,12 @@ public final class JellyView : UIView {
   
   public weak var delegate : JellyViewDelegate?
   public var infoView : UIView?
-//  public var jellyColor : UIColor = UIColor.whiteColor() {
-//    didSet {
-//      shapeLayer.fillColor = jellyColor.CGColor
-//    }
-//  }
   public var triggerThreshold : CGFloat = 0.4
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
   public var flexibility : CGFloat = 0.7
   public var viewMass : CGFloat = 1.0
-  public var springStiffness : CGFloat = 200.0
+  public var springStiffness : CGFloat = 400.0
   
   private var touchPoint = CGPointZero
   private var shapeLayer = CAShapeLayer()
@@ -134,10 +129,10 @@ extension JellyView : UIGestureRecognizerDelegate {
     var currentProggress : CGFloat
     if position == .Left || position == .Right {
       size = self.frame.size.width
-      currentProggress = touchPoint.x
+      currentProggress = fabs(touchPoint.x)
     } else {
       size = self.frame.size.height
-      currentProggress = touchPoint.y
+      currentProggress = fabs(touchPoint.y)
     }
     
     let maxProggress = size * triggerThreshold
@@ -173,7 +168,6 @@ extension JellyView : UIGestureRecognizerDelegate {
     shapeLayer.path = beizerPath.CGPath
     CATransaction.commit()
   }
-  
 }
 
 // MARK: - Animations
@@ -219,7 +213,6 @@ extension JellyView {
     CATransaction.setCompletionBlock { self.animationToFinalDidFinish() }
     shapeLayer.addAnimation(springAnimation, forKey: "path")
     CATransaction.commit()
-
   }
   
   private func animationToInitialWillStart() {
@@ -269,7 +262,6 @@ extension JellyView {
                                    controlPoint1: p1,
                                    controlPoint2: p2,
                                         endPoint: p3)
-    
     return CGPointMake(x, y)
   }
   

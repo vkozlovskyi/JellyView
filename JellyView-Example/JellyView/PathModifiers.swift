@@ -124,14 +124,14 @@ private extension PathModifiers {
     let height = CGRectGetHeight(jellyFrame)
     let outerDelta = outerPointRatio * height
     
-    let fstStartPoint : CGPoint = CGPointZero
-    let fstEndPoint : CGPoint = CGPointMake(touchPoint.x, touchPoint.y)
-    let fstControlPoint1 : CGPoint = CGPointMake(0, touchPoint.y * innerPointRatio)
-    let fstControlPoint2 : CGPoint = CGPointMake(touchPoint.x, touchPoint.y - outerDelta)
-    let sndStartPoint : CGPoint = fstEndPoint
-    let sndEndPoint : CGPoint = CGPointMake(0, height)
-    let sndControlPoint1 : CGPoint = CGPointMake(touchPoint.x, touchPoint.y + outerDelta)
-    let sndControlPoint2 : CGPoint = CGPointMake(0, touchPoint.y + (height - touchPoint.y) * (1.0 - innerPointRatio))
+    let fstStartPoint = CGPointZero
+    let fstEndPoint = CGPointMake(touchPoint.x, touchPoint.y)
+    let fstControlPoint1 = CGPointMake(0, touchPoint.y * innerPointRatio)
+    let fstControlPoint2 = CGPointMake(touchPoint.x, touchPoint.y - outerDelta)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(0, height)
+    let sndControlPoint1 = CGPointMake(touchPoint.x, touchPoint.y + outerDelta)
+    let sndControlPoint2 = CGPointMake(0, touchPoint.y + (height - touchPoint.y) * (1.0 - innerPointRatio))
     
     let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
                                       fstEndPoint: fstEndPoint,
@@ -143,28 +143,95 @@ private extension PathModifiers {
                                       sndControlPoint2: sndControlPoint2)
     
     return pathModifiers
-    
   }
   
   static func rightPathModifiers(touchPoint touchPoint: CGPoint,
                                             jellyFrame: CGRect,
                                             outerPointRatio: CGFloat,
                                             innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let height = CGRectGetHeight(jellyFrame)
+    let width = CGRectGetWidth(jellyFrame)
+    let outerDelta = outerPointRatio * height
+    let curvePointX = width + touchPoint.x
+    
+    let fstStartPoint = CGPointMake(width, 0)
+    let fstEndPoint = CGPointMake(curvePointX, touchPoint.y)
+    let fstControlPoint1 = CGPointMake(width, touchPoint.y * innerPointRatio)
+    let fstControlPoint2 = CGPointMake(curvePointX, touchPoint.y - outerDelta)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, height)
+    let sndControlPoint1 = CGPointMake(curvePointX, touchPoint.y + outerDelta)
+    let sndControlPoint2 = CGPointMake(width, touchPoint.y + (height - touchPoint.y) * (1.0 - innerPointRatio))
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
   }
   
   static func topPathModifiers(touchPoint touchPoint: CGPoint,
                                           jellyFrame: CGRect,
                                           outerPointRatio: CGFloat,
                                           innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let width = CGRectGetWidth(jellyFrame)
+    let outerDelta = outerPointRatio * width
+    
+    let fstStartPoint = CGPointZero
+    let fstEndPoint = CGPointMake(touchPoint.x, touchPoint.y)
+    let fstControlPoint1 = CGPointMake(touchPoint.x * innerPointRatio, 0)
+    let fstControlPoint2 = CGPointMake(touchPoint.x - outerDelta, touchPoint.y)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, 0)
+    let sndControlPoint1 = CGPointMake(touchPoint.x + outerDelta, touchPoint.y)
+    let sndControlPoint2 = CGPointMake(touchPoint.x + (width - touchPoint.x) * (1.0 - innerPointRatio), 0)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    return pathModifiers
   }
   
   static func bottomPathModifiers(touchPoint touchPoint: CGPoint,
                                              jellyFrame: CGRect,
                                              outerPointRatio: CGFloat,
                                              innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let width = CGRectGetWidth(jellyFrame)
+    let height = CGRectGetHeight(jellyFrame)
+    let outerDelta = outerPointRatio * width
+    let curvePointY = height + touchPoint.y
+    
+    let fstStartPoint = CGPointMake(0, height)
+    let fstEndPoint = CGPointMake(touchPoint.x, curvePointY)
+    let fstControlPoint1 = CGPointMake(touchPoint.x * innerPointRatio, height)
+    let fstControlPoint2 = CGPointMake(touchPoint.x - outerDelta, curvePointY)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, height)
+    let sndControlPoint1 = CGPointMake(touchPoint.x + outerDelta, curvePointY)
+    let sndControlPoint2 = CGPointMake(touchPoint.x + (width - touchPoint.x) * (1.0 - innerPointRatio), height)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    return pathModifiers
   }
   
 }
@@ -186,7 +253,6 @@ private extension PathModifiers {
     let fstEndPoint : CGPoint = CGPointMake(0, centerY)
     let fstControlPoint1 : CGPoint = CGPointMake(0, centerY * innerPointRatio)
     let fstControlPoint2 : CGPoint = CGPointMake(0, centerY - outerDelta)
-    
     let sndStartPoint : CGPoint = fstEndPoint
     let sndEndPoint : CGPoint = CGPointMake(0, height)
     let sndControlPoint1 : CGPoint = CGPointMake(0, centerY + outerDelta)
@@ -209,21 +275,87 @@ private extension PathModifiers {
                                             jellyFrame: CGRect,
                                             outerPointRatio: CGFloat,
                                             innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let height = CGRectGetHeight(jellyFrame)
+    let width = CGRectGetWidth(jellyFrame)
+    let outerDelta = outerPointRatio * height
+    
+    let centerY = height / 2
+    let fstStartPoint = CGPointMake(width, 0)
+    let fstEndPoint = CGPointMake(width, centerY)
+    let fstControlPoint1 = CGPointMake(width, centerY * innerPointRatio)
+    let fstControlPoint2 = CGPointMake(width, centerY - outerDelta)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, height)
+    let sndControlPoint1 = CGPointMake(width, centerY + outerDelta)
+    let sndControlPoint2 = CGPointMake(width, centerY + (height - centerY) * (1.0 - innerPointRatio))
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    return pathModifiers
   }
   
   static func initiaTopPathModifiers(touchPoint touchPoint: CGPoint,
                                                  jellyFrame: CGRect,
                                                  outerPointRatio: CGFloat,
                                                  innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    let width = CGRectGetWidth(jellyFrame)
+    let outerDelta = outerPointRatio * width
+    let centerY = width / 2
+    
+    let fstStartPoint = CGPointZero
+    let fstEndPoint = CGPointMake(centerY, 0)
+    let fstControlPoint1 = CGPointMake(centerY * innerPointRatio, 0)
+    let fstControlPoint2 = CGPointMake(centerY - outerDelta, 0)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, 0)
+    let sndControlPoint1 = CGPointMake(centerY + outerDelta, 0)
+    let sndControlPoint2 : CGPoint = CGPointMake(centerY + (width - centerY) * (1.0 - innerPointRatio), 0)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    return pathModifiers
   }
   
   static func initiaBottomPathModifiers(touchPoint touchPoint: CGPoint,
                                                 jellyFrame: CGRect,
                                                 outerPointRatio: CGFloat,
                                                 innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    let width = CGRectGetWidth(jellyFrame)
+    let height = CGRectGetHeight(jellyFrame)
+    let outerDelta = outerPointRatio * width
+    let centerY = width / 2
+    
+    let fstStartPoint = CGPointMake(0, height)
+    let fstEndPoint = CGPointMake(centerY, height)
+    let fstControlPoint1 = CGPointMake(centerY * innerPointRatio, height)
+    let fstControlPoint2 = CGPointMake(centerY - outerDelta, height)
+    let sndStartPoint = fstEndPoint
+    let sndEndPoint = CGPointMake(width, height)
+    let sndControlPoint1 = CGPointMake(centerY + outerDelta, height)
+    let sndControlPoint2 = CGPointMake(centerY + (height - centerY) * (1.0 - innerPointRatio), height)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    return pathModifiers
   }
   
 }
@@ -267,20 +399,99 @@ private extension PathModifiers {
                                                    jellyFrame: CGRect,
                                                    outerPointRatio: CGFloat,
                                                    innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let extraSpace = CGRectGetHeight(jellyFrame) / 4
+    let height = CGRectGetHeight(jellyFrame)
+    let width = CGRectGetWidth(jellyFrame)
+    let widthFinalPoint = width - (width * 1.6)
+    let centerY = height / 2
+    
+    let delta = (width * 1.6) / 2 + widthFinalPoint
+    
+    let fstStartPoint : CGPoint = CGPointMake(width, -extraSpace)
+    let fstEndPoint : CGPoint = CGPointMake(widthFinalPoint, centerY)
+    let fstControlPoint1 : CGPoint = CGPointMake(delta / 2, -extraSpace)
+    let fstControlPoint2 : CGPoint = CGPointMake(widthFinalPoint, centerY / 2)
+    let sndStartPoint : CGPoint = fstEndPoint
+    let sndEndPoint : CGPoint = CGPointMake(width, height + extraSpace)
+    let sndControlPoint1 : CGPoint = CGPointMake(widthFinalPoint, centerY + extraSpace)
+    let sndControlPoint2 : CGPoint = CGPointMake(delta / 2, height + extraSpace)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
   }
   
   static func expandedTopPathModifiers(touchPoint touchPoint: CGPoint,
                                                 jellyFrame: CGRect,
                                                 outerPointRatio: CGFloat,
                                                 innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let extraSpace = CGRectGetWidth(jellyFrame) / 4
+    let height = CGRectGetHeight(jellyFrame) * 1.6
+    let width = CGRectGetWidth(jellyFrame)
+    let centerX = width / 2
+    
+    let fstStartPoint : CGPoint = CGPointMake(-extraSpace, 0)
+    let fstEndPoint : CGPoint = CGPointMake(centerX, height)
+    let fstControlPoint1 : CGPoint = CGPointMake(-extraSpace, height / 2)
+    let fstControlPoint2 : CGPoint = CGPointMake(centerX / 2, height)
+    let sndStartPoint : CGPoint = fstEndPoint
+    let sndEndPoint : CGPoint = CGPointMake(width + extraSpace, 0)
+    let sndControlPoint1 : CGPoint = CGPointMake(centerX + extraSpace, height)
+    let sndControlPoint2 : CGPoint = CGPointMake(width + extraSpace, height / 2)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
+    
   }
   
   static func expandedBottomPathModifiers(touchPoint touchPoint: CGPoint,
                                                    jellyFrame: CGRect,
                                                    outerPointRatio: CGFloat,
                                                    innerPointRatio: CGFloat) -> PathModifiers {
-    return PathModifiers(fstStartPoint: CGPointZero, fstEndPoint: CGPointZero, fstControlPoint1: CGPointZero, fstControlPoint2: CGPointZero, sndStartPoint: CGPointZero, sndEndPoint: CGPointZero, sndControlPoint1: CGPointZero, sndControlPoint2: CGPointZero)
+    
+    let extraSpace = CGRectGetWidth(jellyFrame) / 4
+    let height = CGRectGetHeight(jellyFrame)
+    let heightFinalPoint = height - (height * 1.6)
+    let width = CGRectGetWidth(jellyFrame)
+    let centerX = width / 2
+    
+    let delta = (height * 1.6) / 2 + heightFinalPoint
+    
+    let fstStartPoint : CGPoint = CGPointMake(-extraSpace, height)
+    let fstEndPoint : CGPoint = CGPointMake(centerX, heightFinalPoint)
+    let fstControlPoint1 : CGPoint = CGPointMake(-extraSpace, delta)
+    let fstControlPoint2 : CGPoint = CGPointMake(centerX / 2, heightFinalPoint)
+    let sndStartPoint : CGPoint = fstEndPoint
+    let sndEndPoint : CGPoint = CGPointMake(width + extraSpace, height)
+    let sndControlPoint1 : CGPoint = CGPointMake(centerX + extraSpace, heightFinalPoint)
+    let sndControlPoint2 : CGPoint = CGPointMake(width + extraSpace, delta)
+    
+    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
+                                      fstEndPoint: fstEndPoint,
+                                      fstControlPoint1: fstControlPoint1,
+                                      fstControlPoint2: fstControlPoint2,
+                                      sndStartPoint: sndStartPoint,
+                                      sndEndPoint: sndEndPoint,
+                                      sndControlPoint1: sndControlPoint1,
+                                      sndControlPoint2: sndControlPoint2)
+    
+    return pathModifiers
   }
 }
