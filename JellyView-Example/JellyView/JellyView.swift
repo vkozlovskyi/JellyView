@@ -22,7 +22,17 @@ public enum Position {
 public final class JellyView : UIView {
   
   public weak var delegate : JellyViewDelegate?
-  public var infoView : UIView?
+  public var infoView : UIView? {
+    
+    willSet {
+      if let view = infoView {
+        view.removeFromSuperview()
+      }
+    }
+    didSet {
+      innerView.addSubview(infoView!)
+    }
+  }
   public var triggerThreshold : CGFloat = 0.4
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
@@ -30,6 +40,7 @@ public final class JellyView : UIView {
   public var viewMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 400.0
   
+  private let innerView = UIView()
   private var touchPoint = CGPointZero
   private var shapeLayer = CAShapeLayer()
   private let beizerPath = UIBezierPath()
@@ -39,6 +50,7 @@ public final class JellyView : UIView {
   private var colorIndex : NSInteger = 0
   private let colorsArray : Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
+  private var shouldDisableAnimation = true
   private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
@@ -46,6 +58,10 @@ public final class JellyView : UIView {
       return true
     }
   }
+  
+  // constants
+  private let beizerCurveDelta : CGFloat = 0.3
+  private let innerViewSize : CGFloat = 100
   
   init(position: Position, forView view: UIView, colors: Array<UIColor>) {
     self.position = position
@@ -56,6 +72,9 @@ public final class JellyView : UIView {
     setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
+    
+//    innerView.backgroundColor = UIColor.redColor()
+    self.addSubview(innerView)
   }
   
   private func setupDisplayLink() {
@@ -163,6 +182,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   
   private func applyPathModifiers(pathModifiers : PathModifiers) {
     beizerPath.jellyPath(pathModifiers)
+    updateInnerViewPosition(fromPathModifiers: pathModifiers)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = beizerPath.CGPath
@@ -175,6 +195,9 @@ extension JellyView : UIGestureRecognizerDelegate {
 extension JellyView {
   
   func animateToInitialPosition() {
+    
+    shouldDisableAnimation = displayLink.paused
+    
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: self.frame,
@@ -195,6 +218,9 @@ extension JellyView {
   }
   
   func animateToFinalPosition() {
+    
+    shouldDisableAnimation = displayLink.paused
+    
     let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: self.frame,
@@ -220,7 +246,9 @@ extension JellyView {
   }
   
   @objc private func animationToInitialDidFinish() {
-    displayLink.paused = true
+    if shouldDisableAnimation {
+      displayLink.paused = true
+    }
   }
   
   private func animationToFinalWillStart() {
@@ -236,9 +264,65 @@ extension JellyView {
   }
   
   @objc private func animationInProgress() {
-    
+    guard let presentationLayer = self.shapeLayer.presentationLayer() as? CAShapeLayer else { return }
+    guard let path = presentationLayer.path else { return }
+    let beizerPath = UIBezierPath(CGPath: path)
+    if let pathModifiers = beizerPath.currentPathModifiers() {
+      updateInnerViewPosition(fromPathModifiers: pathModifiers)
+    }
   }
   
+}
+
+// MARK: - Inner View Processing
+
+extension JellyView {
+    
+  private func updateInnerViewPosition(fromPathModifiers pathModifiers: PathModifiers) {
+    
+    let fstDelta = 1 - beizerCurveDelta
+    let sndDelta = beizerCurveDelta
+    let point1 = pointFromCubicBeizerCurve(delta: fstDelta,
+                                      startPoint: pathModifiers.fstStartPoint,
+                                   controlPoint1: pathModifiers.fstControlPoint1,
+                                   controlPoint2: pathModifiers.fstControlPoint2,
+                                        endPoint: pathModifiers.fstEndPoint)
+    let point2 = pointFromCubicBeizerCurve(delta: sndDelta,
+                                           startPoint: pathModifiers.sndStartPoint,
+                                           controlPoint1: pathModifiers.sndControlPoint1,
+                                           controlPoint2: pathModifiers.sndControlPoint2,
+                                           endPoint: pathModifiers.sndEndPoint)
+        
+    var x, y, width, height : CGFloat
+    
+    switch position {
+    case .Left:
+      width = innerViewSize
+      height = point2.y - point1.y
+      x = point1.x - width
+      y = point1.y
+    case .Right:
+      width = innerViewSize
+      height = point2.y - point1.y
+      x = point1.x
+      y = point1.y
+    case .Top:
+      width = point2.x - point1.x
+      height = innerViewSize
+      x = point1.x
+      y = point1.y - height
+    case .Bottom:
+      width = point2.x - point1.x
+      height = innerViewSize
+      x = point1.x
+      y = point1.y
+    }
+    
+    innerView.frame = CGRectMake(x, y, width, height)
+    if let view = infoView {
+      view.center = CGPointMake(innerView.frame.size.width / 2, innerView.frame.size.height / 2)
+    }
+  }
 }
 
 // MARK: - Coordinates Calculation
@@ -246,22 +330,22 @@ extension JellyView {
 extension JellyView {
   
   private func pointFromCubicBeizerCurve(delta t : CGFloat,
-                                   startPoint p0 : CGFloat,
-                                controlPoint1 p1 : CGFloat,
-                                controlPoint2 p2 : CGFloat,
-                                     endPoint p3 : CGFloat) -> CGPoint {
+                                   startPoint p0 : CGPoint,
+                                controlPoint1 p1 : CGPoint,
+                                controlPoint2 p2 : CGPoint,
+                                     endPoint p3 : CGPoint) -> CGPoint {
     
     let x = coordinateFromCubicBeizerCurve(delta: t,
-                                      startPoint: p0,
-                                   controlPoint1: p1,
-                                   controlPoint2: p2,
-                                        endPoint: p3)
+                                      startPoint: p0.x,
+                                   controlPoint1: p1.x,
+                                   controlPoint2: p2.x,
+                                        endPoint: p3.x)
     
     let y = coordinateFromCubicBeizerCurve(delta: t,
-                                      startPoint: p0,
-                                   controlPoint1: p1,
-                                   controlPoint2: p2,
-                                        endPoint: p3)
+                                      startPoint: p0.y,
+                                   controlPoint1: p1.y,
+                                   controlPoint2: p2.y,
+                                        endPoint: p3.y)
     return CGPointMake(x, y)
   }
   

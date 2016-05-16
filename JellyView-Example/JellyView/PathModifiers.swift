@@ -345,7 +345,7 @@ private extension PathModifiers {
     let sndStartPoint = fstEndPoint
     let sndEndPoint = CGPointMake(width, height)
     let sndControlPoint1 = CGPointMake(centerY + outerDelta, height)
-    let sndControlPoint2 = CGPointMake(centerY + (height - centerY) * (1.0 - innerPointRatio), height)
+    let sndControlPoint2 = CGPointMake(centerY + (width - centerY) * (1.0 - innerPointRatio), height)
     
     let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint,
                                       fstEndPoint: fstEndPoint,
