@@ -371,7 +371,7 @@ private extension PathModifiers {
     
     let extraSpace = CGRectGetHeight(jellyFrame) / 4
     let height = CGRectGetHeight(jellyFrame)
-    let width = CGRectGetWidth(jellyFrame) * 1.6
+    let width = CGRectGetWidth(jellyFrame) * 2//1.6
     let centerY = height / 2
     
     let fstStartPoint : CGPoint = CGPointMake(0, -extraSpace)
@@ -403,10 +403,10 @@ private extension PathModifiers {
     let extraSpace = CGRectGetHeight(jellyFrame) / 4
     let height = CGRectGetHeight(jellyFrame)
     let width = CGRectGetWidth(jellyFrame)
-    let widthFinalPoint = width - (width * 1.6)
+    let widthFinalPoint = width - (width * 2/*1.6*/)
     let centerY = height / 2
     
-    let delta = (width * 1.6) / 2 + widthFinalPoint
+    let delta = (width * 2/*1.6*/) / 2 + widthFinalPoint
     
     let fstStartPoint : CGPoint = CGPointMake(width, -extraSpace)
     let fstEndPoint : CGPoint = CGPointMake(widthFinalPoint, centerY)
@@ -435,7 +435,7 @@ private extension PathModifiers {
                                                 innerPointRatio: CGFloat) -> PathModifiers {
     
     let extraSpace = CGRectGetWidth(jellyFrame) / 4
-    let height = CGRectGetHeight(jellyFrame) * 1.6
+    let height = CGRectGetHeight(jellyFrame) * 2//1.6
     let width = CGRectGetWidth(jellyFrame)
     let centerX = width / 2
     
@@ -468,11 +468,11 @@ private extension PathModifiers {
     
     let extraSpace = CGRectGetWidth(jellyFrame) / 4
     let height = CGRectGetHeight(jellyFrame)
-    let heightFinalPoint = height - (height * 1.6)
+    let heightFinalPoint = height - (height * 2/*1.6*/)
     let width = CGRectGetWidth(jellyFrame)
     let centerX = width / 2
     
-    let delta = (height * 1.6) / 2 + heightFinalPoint
+    let delta = (height * 2/*1.6*/) / 2 + heightFinalPoint
     
     let fstStartPoint : CGPoint = CGPointMake(-extraSpace, height)
     let fstEndPoint : CGPoint = CGPointMake(centerX, heightFinalPoint)

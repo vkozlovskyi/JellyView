@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     self.view.backgroundColor = colorsArray().last
     let jellyView = JellyView(position: .Top, forView: self.view, colors: colorsArray())
     self.view.addSubview(jellyView)
-    
+    jellyView.offset = -50
     let infoLabel = UILabel(frame: CGRectMake(0.0, 0.0, 150.0, 50))
     infoLabel.font = UIFont.systemFontOfSize(30)
     infoLabel.text = "Test"

@@ -39,6 +39,7 @@ public final class JellyView : UIView {
   public var flexibility : CGFloat = 0.7
   public var viewMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 400.0
+  public var offset : CGFloat = 0
   
   private let innerView = UIView()
   private var touchPoint = CGPointZero
@@ -62,7 +63,7 @@ public final class JellyView : UIView {
   // constants
   private let beizerCurveDelta : CGFloat = 0.3
   private let innerViewSize : CGFloat = 100
-  
+  private let maxDegreesTransform : CGFloat = 40
   init(position: Position, forView view: UIView, colors: Array<UIColor>) {
     self.position = position
     self.colorsArray = colors
@@ -233,6 +234,7 @@ extension JellyView {
     springAnimation.damping = 1000
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
+    print(springAnimation.duration)
     springAnimation.fromValue = beizerPath.CGPath
     beizerPath.jellyPath(pathModifiers)
     shapeLayer.path = beizerPath.CGPath
@@ -271,7 +273,6 @@ extension JellyView {
       updateInnerViewPosition(fromPathModifiers: pathModifiers)
     }
   }
-  
 }
 
 // MARK: - Inner View Processing
@@ -292,7 +293,7 @@ extension JellyView {
                                            controlPoint1: pathModifiers.sndControlPoint1,
                                            controlPoint2: pathModifiers.sndControlPoint2,
                                            endPoint: pathModifiers.sndEndPoint)
-        
+    
     var x, y, width, height : CGFloat
     
     switch position {
@@ -318,10 +319,34 @@ extension JellyView {
       y = point1.y
     }
     
-    innerView.frame = CGRectMake(x, y, width, height)
+    innerView.frame = CGRectMake(x + offset, y, width, height)
     if let view = infoView {
       view.center = CGPointMake(innerView.frame.size.width / 2, innerView.frame.size.height / 2)
+      transformInfoView()
     }
+  }
+  
+  private func transformInfoView() {
+    let tpValue = touchPointValue()
+    var degrees : CGFloat = maxDegreesTransform * tpValue
+    if position == .Right || position == .Bottom {
+      degrees *= -1
+    }
+    infoView!.transform = CGAffineTransformMakeRotation(CGFloat(degrees.degreesToRadians))
+  }
+  
+  private func touchPointValue() -> CGFloat {
+    
+    var touchCoord = touchPoint.y
+    var touchAreaSize = self.frame.size.height
+    if position == .Top || position == .Bottom {
+      touchCoord = touchPoint.x
+      touchAreaSize = self.frame.size.width
+    }
+    
+    let difference = touchAreaSize - touchCoord
+    let result = 1 - (difference / (touchAreaSize / 2))
+    return result
   }
 }
 
@@ -362,5 +387,10 @@ extension JellyView {
     x += pow(t, 3) * p3
     return x
   }
-  
 }
+
+extension CGFloat {
+  var degreesToRadians: Double { return Double(self) * M_PI / 180 }
+  var radiansToDegrees: Double { return Double(self) * 180 / M_PI }
+}
+
