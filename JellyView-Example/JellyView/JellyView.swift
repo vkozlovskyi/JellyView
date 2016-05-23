@@ -64,17 +64,15 @@ public final class JellyView : UIView {
   private let beizerCurveDelta : CGFloat = 0.3
   private let innerViewSize : CGFloat = 100
   private let maxDegreesTransform : CGFloat = 40
-  init(position: Position, forView view: UIView, colors: Array<UIColor>) {
+  
+  init(position: Position, colors: Array<UIColor>) {
     self.position = position
     self.colorsArray = colors
-    super.init(frame: view.bounds)
-    connectGestureRecognizer(toView: view)
+    super.init(frame: CGRectZero)
     shapeLayer.fillColor = colorsArray[colorIndex].CGColor
     setupDisplayLink()
     self.backgroundColor = UIColor.clearColor()
     self.layer.insertSublayer(shapeLayer, atIndex: 0)
-    
-//    innerView.backgroundColor = UIColor.redColor()
     self.addSubview(innerView)
   }
   
@@ -92,6 +90,19 @@ public final class JellyView : UIView {
     return self.superview
   }
   
+  public override func didMoveToSuperview() {
+    super.didMoveToSuperview()
+    guard let superview = self.superview else { return }
+    connectGestureRecognizer(toView: superview)
+    self.frame = superview.bounds
+  }
+  
+  public override func removeFromSuperview() {
+    displayLink.invalidate()
+    guard let superview = self.superview else { return }
+    disconnectGestureRecognizer(fromView: superview)
+    super.removeFromSuperview()
+  }
 }
 
 extension JellyView {
@@ -119,6 +130,12 @@ extension JellyView : UIGestureRecognizerDelegate {
     gestureRecognizer.addTarget(self, action: #selector(JellyView.handlePanGesture(_:)))
     gestureRecognizer.delegate = self
     view.addGestureRecognizer(gestureRecognizer)
+  }
+  
+  func disconnectGestureRecognizer(fromView view : UIView) {
+    gestureRecognizer.removeTarget(self, action: #selector(JellyView.handlePanGesture(_:)))
+    gestureRecognizer.delegate = nil
+    view.removeGestureRecognizer(gestureRecognizer)
   }
   
   @objc private func handlePanGesture(let pan : UIPanGestureRecognizer) {

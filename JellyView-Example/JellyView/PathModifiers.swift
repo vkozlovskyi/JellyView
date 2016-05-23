@@ -249,7 +249,7 @@ private extension PathModifiers {
                                                    jellyFrame: CGRect,
                                                    outerPointRatio: CGFloat,
                                                    innerPointRatio: CGFloat) -> PathModifiers {
-
+    
     let height = CGRectGetHeight(jellyFrame)
     let outerDelta = outerPointRatio * height
     let extraSpace = CGRectGetHeight(jellyFrame) / extraSpaceDivider
