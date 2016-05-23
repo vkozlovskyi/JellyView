@@ -37,7 +37,7 @@ public final class JellyView : UIView {
   public var innerPointRatio : CGFloat = 0.4
   public var outerPointRatio : CGFloat = 0.25
   public var flexibility : CGFloat = 0.7
-  public var viewMass : CGFloat = 1.0
+  public var jellyMass : CGFloat = 1.0
   public var springStiffness : CGFloat = 400.0
   public var offset : CGFloat = 0
   
@@ -147,12 +147,19 @@ extension JellyView : UIGestureRecognizerDelegate {
   private func shouldInitiateAction() -> Bool {
     var size : CGFloat
     var currentProggress : CGFloat
-    if position == .Left || position == .Right {
-      size = self.frame.size.width
-      currentProggress = fabs(touchPoint.x)
-    } else {
-      size = self.frame.size.height
-      currentProggress = fabs(touchPoint.y)
+    switch position {
+    case .Left:
+      size = self.translatedFrame().size.width
+      currentProggress = touchPoint.x
+    case .Right:
+      size = self.translatedFrame().size.width
+      currentProggress = -touchPoint.x
+    case .Top:
+      size = self.translatedFrame().size.height
+      currentProggress = touchPoint.y
+    case .Bottom:
+      size = self.translatedFrame().size.height
+      currentProggress = -touchPoint.y
     }
     
     let maxProggress = size * triggerThreshold
@@ -166,7 +173,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   private func modifyShapeLayerForTouch() {
     let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.frame,
+                                                           jellyFrame: self.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     applyPathModifiers(pathModifiers)
@@ -175,7 +182,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   private func modifyShapeLayerForInitialPosition() {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.frame,
+                                                           jellyFrame: self.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     applyPathModifiers(pathModifiers)
@@ -201,13 +208,13 @@ extension JellyView {
     
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.frame,
+                                                           jellyFrame: self.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
     self.animationToInitialWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
-    springAnimation.mass = viewMass
+    springAnimation.mass = jellyMass
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = beizerPath.CGPath
@@ -224,17 +231,16 @@ extension JellyView {
     
     let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.frame,
+                                                           jellyFrame: self.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
     self.animationToFinalWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
-    springAnimation.mass = viewMass
+    springAnimation.mass = jellyMass
     springAnimation.damping = 1000
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
-    print(springAnimation.duration)
     springAnimation.fromValue = beizerPath.CGPath
     beizerPath.jellyPath(pathModifiers)
     shapeLayer.path = beizerPath.CGPath
@@ -300,26 +306,27 @@ extension JellyView {
     case .Left:
       width = innerViewSize
       height = point2.y - point1.y
-      x = point1.x - width
+      x = point1.x - width + offset
       y = point1.y
     case .Right:
       width = innerViewSize
       height = point2.y - point1.y
-      x = point1.x
+      x = point1.x + offset
       y = point1.y
     case .Top:
       width = point2.x - point1.x
       height = innerViewSize
       x = point1.x
-      y = point1.y - height
+      y = point1.y - height + offset
     case .Bottom:
       width = point2.x - point1.x
       height = innerViewSize
       x = point1.x
-      y = point1.y
+      y = point1.y + offset
     }
     
-    innerView.frame = CGRectMake(x + offset, y, width, height)
+    innerView.frame = CGRectMake(x, y, width, height)
+    innerView.translatedFrame()
     if let view = infoView {
       view.center = CGPointMake(innerView.frame.size.width / 2, innerView.frame.size.height / 2)
       transformInfoView()
@@ -338,10 +345,10 @@ extension JellyView {
   private func touchPointValue() -> CGFloat {
     
     var touchCoord = touchPoint.y
-    var touchAreaSize = self.frame.size.height
+    var touchAreaSize = self.translatedFrame().size.height
     if position == .Top || position == .Bottom {
       touchCoord = touchPoint.x
-      touchAreaSize = self.frame.size.width
+      touchAreaSize = self.translatedFrame().size.width
     }
     
     let difference = touchAreaSize - touchCoord
