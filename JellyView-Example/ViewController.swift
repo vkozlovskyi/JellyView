@@ -13,7 +13,7 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.backgroundColor = colorsArray().last
-    let jellyView = JellyView(position: .Bottom, forView: self.view, colors: colorsArray())
+    let jellyView = JellyView(position: .Left, forView: self.view, colors: colorsArray())
     self.view.addSubview(jellyView)
     let infoLabel = UILabel(frame: CGRectMake(0.0, 0.0, 150.0, 80))
     infoLabel.numberOfLines = 2
@@ -21,7 +21,7 @@ class ViewController: UIViewController {
     infoLabel.text = "Pull To\nRefresh"
     infoLabel.textAlignment = NSTextAlignment.Center
     jellyView.infoView = infoLabel
-    jellyView.offset = 30
+    jellyView.offset = -30
   }
   
   func colorsArray() -> Array<UIColor> {

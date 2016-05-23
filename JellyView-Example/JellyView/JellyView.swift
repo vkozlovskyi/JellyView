@@ -311,7 +311,7 @@ extension JellyView {
     case .Right:
       width = innerViewSize
       height = point2.y - point1.y
-      x = point1.x + offset
+      x = point1.x - offset
       y = point1.y
     case .Top:
       width = point2.x - point1.x
@@ -322,7 +322,7 @@ extension JellyView {
       width = point2.x - point1.x
       height = innerViewSize
       x = point1.x
-      y = point1.y + offset
+      y = point1.y - offset
     }
     
     innerView.frame = CGRectMake(x, y, width, height)
