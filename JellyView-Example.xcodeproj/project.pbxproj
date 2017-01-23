@@ -15,6 +15,7 @@
 		E71DF4AB1CD24435008DF0DC /* JellyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4AA1CD24435008DF0DC /* JellyView.swift */; };
 		E71DF4AD1CD24BCA008DF0DC /* JellyViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4AC1CD24BCA008DF0DC /* JellyViewExtensions.swift */; };
 		E745579C1CDCAAEB00A505E2 /* PathModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E745579B1CDCAAEB00A505E2 /* PathModifiers.swift */; };
+		E7AA95B01E36922D0081FE35 /* pfdindisplaypro-reg.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E7AA95AF1E36922D0081FE35 /* pfdindisplaypro-reg.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		E71DF4AA1CD24435008DF0DC /* JellyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JellyView.swift; sourceTree = "<group>"; };
 		E71DF4AC1CD24BCA008DF0DC /* JellyViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JellyViewExtensions.swift; sourceTree = "<group>"; };
 		E745579B1CDCAAEB00A505E2 /* PathModifiers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathModifiers.swift; sourceTree = "<group>"; };
+		E7AA95AF1E36922D0081FE35 /* pfdindisplaypro-reg.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pfdindisplaypro-reg.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 				E71DF49C1CD243FD008DF0DC /* Assets.xcassets */,
 				E71DF49E1CD243FD008DF0DC /* LaunchScreen.storyboard */,
 				E71DF4A11CD243FD008DF0DC /* Info.plist */,
+				E7AA95AE1E36922D0081FE35 /* Fonts */,
 			);
 			path = "JellyView-Example";
 			sourceTree = "<group>";
@@ -81,6 +84,14 @@
 				E745579B1CDCAAEB00A505E2 /* PathModifiers.swift */,
 			);
 			path = JellyView;
+			sourceTree = "<group>";
+		};
+		E7AA95AE1E36922D0081FE35 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				E7AA95AF1E36922D0081FE35 /* pfdindisplaypro-reg.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -144,6 +155,7 @@
 			files = (
 				E71DF4A01CD243FD008DF0DC /* LaunchScreen.storyboard in Resources */,
 				E71DF49D1CD243FD008DF0DC /* Assets.xcassets in Resources */,
+				E7AA95B01E36922D0081FE35 /* pfdindisplaypro-reg.ttf in Resources */,
 				E71DF49B1CD243FD008DF0DC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

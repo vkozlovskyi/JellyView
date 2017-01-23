@@ -343,7 +343,7 @@ extension JellyView {
     }
     
     innerView.frame = CGRect(x: x, y: y, width: width, height: height)
-    innerView.translatedFrame()
+//    innerView.translatedFrame()
     if let view = infoView {
       view.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
       transformInfoView()
