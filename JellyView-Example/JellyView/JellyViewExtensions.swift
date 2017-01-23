@@ -11,16 +11,16 @@ import UIKit
 extension UIPanGestureRecognizer {
   
   public func touchPoint(forPosition position : Position, flexibility flx : CGFloat) -> CGPoint {
-    var touchPoint = CGPointZero
+    var touchPoint = CGPoint.zero
     switch position {
-    case .Left:
-      touchPoint = CGPointMake(self.translationInView(self.view).x * flx, self.locationInView(self.view).y)
-    case .Right:
-      touchPoint = CGPointMake(self.translationInView(self.view).x * flx, self.locationInView(self.view).y)
-    case .Top:
-      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y * flx)
-    case .Bottom:
-      touchPoint = CGPointMake(self.locationInView(self.view).x, self.translationInView(self.view).y * flx)
+    case .left:
+      touchPoint = CGPoint(x: self.translation(in: self.view).x * flx, y: self.location(in: self.view).y)
+    case .right:
+      touchPoint = CGPoint(x: self.translation(in: self.view).x * flx, y: self.location(in: self.view).y)
+    case .top:
+      touchPoint = CGPoint(x: self.location(in: self.view).x, y: self.translation(in: self.view).y * flx)
+    case .bottom:
+      touchPoint = CGPoint(x: self.location(in: self.view).x, y: self.translation(in: self.view).y * flx)
     }
     return touchPoint
   }
@@ -29,36 +29,36 @@ extension UIPanGestureRecognizer {
 
 extension UIView {
   func translatedFrame() -> CGRect {
-    var frame = CGRectZero
-    if UIScreen.mainScreen().bounds.size.width < UIScreen.mainScreen().bounds.size.height {
-      frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, self.frame.size.height)
+    var frame = CGRect.zero
+    if UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height {
+      frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y, width: self.frame.size.width, height: self.frame.size.height)
     } else {
-      frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.height, self.frame.size.width)
+      frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y, width: self.frame.size.height, height: self.frame.size.width)
     }
     return frame
   }
 }
 
 extension CGPath {
-  func forEach(@noescape body: @convention(block) (CGPathElement) -> Void) {
+  func forEach( body: @convention(block) (CGPathElement) -> Void) {
     typealias Body = @convention(block) (CGPathElement) -> Void
-    func callback(info: UnsafeMutablePointer<Void>, element: UnsafePointer<CGPathElement>) {
-      let body = unsafeBitCast(info, Body.self)
-      body(element.memory)
+    func callback(info: UnsafeMutableRawPointer?, element: UnsafePointer<CGPathElement>) {
+      let body = unsafeBitCast(info, to: Body.self)
+      body(element.pointee)
     }
-    let unsafeBody = unsafeBitCast(body, UnsafeMutablePointer<Void>.self)
-    CGPathApply(self, unsafeBody, callback)
+    let unsafeBody = unsafeBitCast(body, to: UnsafeMutableRawPointer.self)
+    apply(info: unsafeBody, function: callback)
   }
 }
 
 public extension UIBezierPath {
   
-  public func jellyPath(pm : PathModifiers) {
+  public func jellyPath(_ pm : PathModifiers) {
     self.removeAllPoints()
-    self.moveToPoint(pm.fstStartPoint)
-    self.addCurveToPoint(pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
-    self.addCurveToPoint(pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
-    self.closePath()
+    self.move(to: pm.fstStartPoint)
+    self.addCurve(to: pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
+    self.addCurve(to: pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
+    self.close()
   }
   
   public func currentPathModifiers() -> PathModifiers? {
@@ -75,19 +75,19 @@ public extension UIBezierPath {
     
     var index = 0
     var error = false
-    self.CGPath.forEach { element in
+    self.cgPath.forEach { element in
       
-      if index == 0 && element.type == .MoveToPoint {
-        fstStartPoint = element.points.memory
-      } else if index == 1 && element.type == .AddCurveToPoint {
-        fstEndPoint = element.points.advancedBy(2).memory
-        fstControlPoint1 = element.points.memory
-        fstControlPoint2 = element.points.advancedBy(1).memory
-      } else if index == 2 && element.type == .AddCurveToPoint {
+      if index == 0 && element.type == .moveToPoint {
+        fstStartPoint = element.points.pointee
+      } else if index == 1 && element.type == .addCurveToPoint {
+        fstEndPoint = element.points.advanced(by: 2).pointee
+        fstControlPoint1 = element.points.pointee
+        fstControlPoint2 = element.points.advanced(by: 1).pointee
+      } else if index == 2 && element.type == .addCurveToPoint {
         sndStartPoint = fstEndPoint
-        sndEndPoint = element.points.advancedBy(2).memory
-        sndControlPoint1 = element.points.memory
-        sndControlPoint2 = element.points.advancedBy(1).memory
+        sndEndPoint = element.points.advanced(by: 2).pointee
+        sndControlPoint1 = element.points.pointee
+        sndControlPoint2 = element.points.advanced(by: 1).pointee
       } else if index == 0 || index == 1 || index == 2 {
         error = true
       }

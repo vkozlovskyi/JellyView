@@ -13,13 +13,13 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.backgroundColor = colorsArray().last
-    let jellyView = JellyView(position: .Left, colors: colorsArray())
+    let jellyView = JellyView(position: .left, colors: colorsArray())
     self.view.addSubview(jellyView)
-    let infoLabel = UILabel(frame: CGRectMake(0.0, 0.0, 150.0, 80))
+    let infoLabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 80))
     infoLabel.numberOfLines = 2
-    infoLabel.font = UIFont.boldSystemFontOfSize(30)
+    infoLabel.font = UIFont.boldSystemFont(ofSize: 30)
     infoLabel.text = "Pull To\nRefresh"
-    infoLabel.textAlignment = NSTextAlignment.Center
+    infoLabel.textAlignment = NSTextAlignment.center
     jellyView.infoView = infoLabel
     jellyView.offset = -30
   }
