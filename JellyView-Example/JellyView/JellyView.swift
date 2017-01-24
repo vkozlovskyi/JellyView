@@ -12,11 +12,18 @@ public enum Position {
   case left, right, top, bottom
 }
 
-@objc public protocol JellyViewDelegate : class {
-  @objc optional func jellyViewShouldStartDragging(_ jellyView : JellyView) -> Bool
-  @objc optional func jellyViewDidStartDragging(_ curtainControl : JellyView)
-  @objc optional func jellyViewDidEndDragging(_ curtainControl : JellyView)
-  @objc optional func jellyViewActionFired(_ curtainControl : JellyView)
+public protocol JellyViewDelegate : class {
+  func jellyViewShouldStartDragging(_ jellyView : JellyView) -> Bool
+  func jellyViewDidStartDragging(_ jellyView : JellyView)
+  func jellyViewDidEndDragging(_ jellyView : JellyView)
+  func jellyViewColorFilled(_ jellyView : JellyView)
+}
+
+extension JellyViewDelegate {
+  func jellyViewShouldStartDragging(_ jellyView : JellyView) -> Bool { return true }
+  func jellyViewDidStartDragging(_ jellyView : JellyView) { }
+  func jellyViewDidEndDragging(_ jellyView : JellyView) { }
+  func jellyViewColorFilled(_ jellyView : JellyView) { }
 }
 
 public final class JellyView : UIView {
@@ -49,11 +56,11 @@ public final class JellyView : UIView {
   fileprivate let position : Position
   fileprivate var displayLink : CADisplayLink!
   fileprivate var colorIndex : NSInteger = 0
-  fileprivate let colorsArray : Array<UIColor>
+  fileprivate let colors : Array<UIColor>
   fileprivate let gestureRecognizer = UIPanGestureRecognizer()
   fileprivate var shouldDisableAnimation = true
   fileprivate var shouldStartDragging : Bool {
-    if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
+    if let shouldStartDragging = delegate?.jellyViewShouldStartDragging(self) {
       return shouldStartDragging
     } else {
       return true
@@ -67,13 +74,22 @@ public final class JellyView : UIView {
   
   init(position: Position, colors: Array<UIColor>) {
     self.position = position
-    self.colorsArray = colors
+    self.colors = colors
     super.init(frame: CGRect.zero)
-    shapeLayer.fillColor = colorsArray[colorIndex].cgColor
+    shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
     self.backgroundColor = UIColor.clear
     self.layer.insertSublayer(shapeLayer, at: 0)
     self.addSubview(innerView)
+  }
+  
+  fileprivate func setInitialInnerViewPosition() {
+    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
+                                                           touchPoint: touchPoint,
+                                                           jellyFrame: translatedFrame(),
+                                                           outerPointRatio: outerPointRatio,
+                                                           innerPointRatio: innerPointRatio)
+    updateInnerViewPosition(fromPathModifiers: pathModifiers)
   }
   
   fileprivate func setupDisplayLink() {
@@ -95,6 +111,7 @@ public final class JellyView : UIView {
     guard let superview = self.superview else { return }
     connectGestureRecognizer(toView: superview)
     self.frame = superview.bounds
+    setInitialInnerViewPosition()
   }
   
   public override func removeFromSuperview() {
@@ -109,15 +126,15 @@ extension JellyView {
   
   fileprivate func updateColors() {
     guard let superview = self.superview else { return }
-    let currentColor = colorsArray[colorIndex]
+    let currentColor = colors[colorIndex]
     superview.backgroundColor = currentColor
     
     colorIndex += 1
-    if colorIndex > colorsArray.count - 1 {
+    if colorIndex > colors.count - 1 {
       colorIndex = 0
     }
     
-    shapeLayer.fillColor = colorsArray[colorIndex].cgColor
+    shapeLayer.fillColor = colors[colorIndex].cgColor
   }
   
 }
@@ -138,19 +155,19 @@ extension JellyView : UIGestureRecognizerDelegate {
     view.removeGestureRecognizer(gestureRecognizer)
   }
   
-  @objc fileprivate func handlePanGesture(_ pan : UIPanGestureRecognizer) {
+  func handlePanGesture(_ pan : UIPanGestureRecognizer) {
     
     if shouldStartDragging {
       touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
       
       if (pan.state == .began) {
-        self.delegate?.jellyViewDidStartDragging?(self)
+        self.delegate?.jellyViewDidStartDragging(self)
         modifyShapeLayerForTouch()
       } else if (pan.state == .changed) {
         modifyShapeLayerForTouch()
       } else if (pan.state == .ended || pan.state == .cancelled) {
         
-        self.delegate?.jellyViewDidEndDragging?(self)
+        self.delegate?.jellyViewDidEndDragging(self)
         
         if shouldInitiateAction() {
           animateToFinalPosition()
@@ -270,7 +287,7 @@ extension JellyView {
     displayLink.isPaused = false
   }
   
-  @objc fileprivate func animationToInitialDidFinish() {
+  func animationToInitialDidFinish() {
     if shouldDisableAnimation {
       displayLink.isPaused = true
     }
@@ -281,14 +298,15 @@ extension JellyView {
     displayLink.isPaused = false
   }
   
-  @objc fileprivate func animationToFinalDidFinish() {
+  fileprivate func animationToFinalDidFinish() {
+    delegate?.jellyViewColorFilled(self)
     displayLink.isPaused = true
     gestureRecognizer.isEnabled = true
     updateColors()
     modifyShapeLayerForInitialPosition()
   }
   
-  @objc fileprivate func animationInProgress() {
+  func animationInProgress() {
     guard let presentationLayer = self.shapeLayer.presentation() else { return }
     guard let path = presentationLayer.path else { return }
     let beizerPath = UIBezierPath(cgPath: path)
@@ -303,7 +321,6 @@ extension JellyView {
 extension JellyView {
     
   fileprivate func updateInnerViewPosition(fromPathModifiers pathModifiers: PathModifiers) {
-    
     let fstDelta = 1 - beizerCurveDelta
     let sndDelta = beizerCurveDelta
     let point1 = pointFromCubicBeizerCurve(delta: fstDelta,
@@ -353,7 +370,7 @@ extension JellyView {
   fileprivate func transformInfoView() {
     let tpValue = touchPointValue()
     var degrees : CGFloat = maxDegreesTransform * tpValue
-    if position == .right || position == .bottom {
+    if position == .right || position == .top {
       degrees *= -1
     }
     infoView!.transform = CGAffineTransform(rotationAngle: CGFloat(degrees.degreesToRadians))
