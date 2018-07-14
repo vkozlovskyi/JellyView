@@ -20,6 +20,8 @@ public enum Position {
   @objc optional func jellyViewActionFired(_ curtainControl : JellyView)
 }
 
+
+
 public final class JellyView : UIView {
   
   public weak var delegate : JellyViewDelegate?
