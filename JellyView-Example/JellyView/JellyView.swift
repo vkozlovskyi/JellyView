@@ -47,7 +47,7 @@ public final class JellyView : UIView {
   fileprivate let innerView = UIView()
   fileprivate var touchPoint = CGPoint.zero
   fileprivate var shapeLayer = CAShapeLayer()
-  fileprivate let beizerPath = UIBezierPath()
+  fileprivate let bezierPath = UIBezierPath()
   fileprivate weak var containerView : UIView?
   fileprivate let position : Position
   fileprivate var displayLink : CADisplayLink!
@@ -166,24 +166,24 @@ extension JellyView : UIGestureRecognizerDelegate {
   
   fileprivate func shouldInitiateAction() -> Bool {
     var size : CGFloat
-    var currentProggress : CGFloat
+    var currentProgress: CGFloat
     switch position {
     case .left:
       size = self.translatedFrame().size.width
-      currentProggress = touchPoint.x
+      currentProgress = touchPoint.x
     case .right:
       size = self.translatedFrame().size.width
-      currentProggress = -touchPoint.x
+      currentProgress = -touchPoint.x
     case .top:
       size = self.translatedFrame().size.height
-      currentProggress = touchPoint.y
+      currentProgress = touchPoint.y
     case .bottom:
       size = self.translatedFrame().size.height
-      currentProggress = -touchPoint.y
+      currentProgress = -touchPoint.y
     }
     
-    let maxProggress = size * triggerThreshold
-    if currentProggress >= maxProggress {
+    let maxProgress = size * triggerThreshold
+    if currentProgress >= maxProgress {
       return true
     } else {
       return false
@@ -209,11 +209,11 @@ extension JellyView : UIGestureRecognizerDelegate {
   }
   
   fileprivate func applyPathModifiers(_ pathModifiers : PathModifiers) {
-    beizerPath.jellyPath(pathModifiers)
+    bezierPath.jellyPath(pathModifiers)
     updateInnerViewPosition(fromPathModifiers: pathModifiers)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
-    shapeLayer.path = beizerPath.cgPath
+    shapeLayer.path = bezierPath.cgPath
     CATransaction.commit()
   }
 }
@@ -237,9 +237,9 @@ extension JellyView {
     springAnimation.mass = jellyMass
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
-    springAnimation.fromValue = beizerPath.cgPath
-    beizerPath.jellyPath(pathModifiers)
-    shapeLayer.path = beizerPath.cgPath
+    springAnimation.fromValue = bezierPath.cgPath
+    bezierPath.jellyPath(pathModifiers)
+    shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToInitialDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
     CATransaction.commit()
@@ -261,9 +261,9 @@ extension JellyView {
     springAnimation.damping = 1000
     springAnimation.stiffness = springStiffness
     springAnimation.duration = springAnimation.settlingDuration
-    springAnimation.fromValue = beizerPath.cgPath
-    beizerPath.jellyPath(pathModifiers)
-    shapeLayer.path = beizerPath.cgPath
+    springAnimation.fromValue = bezierPath.cgPath
+    bezierPath.jellyPath(pathModifiers)
+    shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToFinalDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
     CATransaction.commit()
@@ -294,8 +294,8 @@ extension JellyView {
   @objc fileprivate func animationInProgress() {
     guard let presentationLayer = self.shapeLayer.presentation() else { return }
     guard let path = presentationLayer.path else { return }
-    let beizerPath = UIBezierPath(cgPath: path)
-    if let pathModifiers = beizerPath.currentPathModifiers() {
+    let bezierPath = UIBezierPath(cgPath: path)
+    if let pathModifiers = bezierPath.currentPathModifiers() {
       updateInnerViewPosition(fromPathModifiers: pathModifiers)
     }
   }
@@ -309,12 +309,12 @@ extension JellyView {
     
     let fstDelta = 1 - beizerCurveDelta
     let sndDelta = beizerCurveDelta
-    let point1 = pointFromCubicBeizerCurve(delta: fstDelta,
-                                      startPoint: pathModifiers.fstStartPoint,
-                                   controlPoint1: pathModifiers.fstControlPoint1,
-                                   controlPoint2: pathModifiers.fstControlPoint2,
-                                        endPoint: pathModifiers.fstEndPoint)
-    let point2 = pointFromCubicBeizerCurve(delta: sndDelta,
+    let point1 = pointFromCubicBezierCurve(delta: fstDelta,
+                                           startPoint: pathModifiers.fstStartPoint,
+                                           controlPoint1: pathModifiers.fstControlPoint1,
+                                           controlPoint2: pathModifiers.fstControlPoint2,
+                                           endPoint: pathModifiers.fstEndPoint)
+    let point2 = pointFromCubicBezierCurve(delta: sndDelta,
                                            startPoint: pathModifiers.sndStartPoint,
                                            controlPoint1: pathModifiers.sndControlPoint1,
                                            controlPoint2: pathModifiers.sndControlPoint2,
@@ -380,31 +380,31 @@ extension JellyView {
 
 extension JellyView {
   
-  fileprivate func pointFromCubicBeizerCurve(delta t : CGFloat,
-                                   startPoint p0 : CGPoint,
-                                controlPoint1 p1 : CGPoint,
-                                controlPoint2 p2 : CGPoint,
-                                     endPoint p3 : CGPoint) -> CGPoint {
+  fileprivate func pointFromCubicBezierCurve(delta t : CGFloat,
+                                             startPoint p0 : CGPoint,
+                                             controlPoint1 p1 : CGPoint,
+                                             controlPoint2 p2 : CGPoint,
+                                             endPoint p3 : CGPoint) -> CGPoint {
     
-    let x = coordinateFromCubicBeizerCurve(delta: t,
-                                      startPoint: p0.x,
-                                   controlPoint1: p1.x,
-                                   controlPoint2: p2.x,
-                                        endPoint: p3.x)
+    let x = coordinateFromCubicBezierCurve(delta: t,
+                                           startPoint: p0.x,
+                                           controlPoint1: p1.x,
+                                           controlPoint2: p2.x,
+                                           endPoint: p3.x)
     
-    let y = coordinateFromCubicBeizerCurve(delta: t,
-                                      startPoint: p0.y,
-                                   controlPoint1: p1.y,
-                                   controlPoint2: p2.y,
-                                        endPoint: p3.y)
+    let y = coordinateFromCubicBezierCurve(delta: t,
+                                           startPoint: p0.y,
+                                           controlPoint1: p1.y,
+                                           controlPoint2: p2.y,
+                                           endPoint: p3.y)
     return CGPoint(x: x, y: y)
   }
   
-  fileprivate func coordinateFromCubicBeizerCurve(delta t : CGFloat,
-                                        startPoint p0 : CGFloat,
-                                     controlPoint1 p1 : CGFloat,
-                                     controlPoint2 p2 : CGFloat,
-                                          endPoint p3 : CGFloat) -> CGFloat {
+  fileprivate func coordinateFromCubicBezierCurve(delta t : CGFloat,
+                                                  startPoint p0 : CGFloat,
+                                                  controlPoint1 p1 : CGFloat,
+                                                  controlPoint2 p2 : CGFloat,
+                                                  endPoint p3 : CGFloat) -> CGFloat {
     
     // I had to split expression to several parts to stop the compiler's whining
     var x = pow(1 - t, 3) * p0

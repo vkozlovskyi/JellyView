@@ -40,14 +40,14 @@ extension UIView {
 }
 
 extension CGPath {
-  func forEach(_ body: @convention(block) (CGPathElement) -> Void) {
+  func forEach( body: @convention(block) (CGPathElement) -> Void) {
     typealias Body = @convention(block) (CGPathElement) -> Void
-    func callback(_ info: UnsafeMutableRawPointer, element: UnsafePointer<CGPathElement>) {
+    func callback(info: UnsafeMutableRawPointer?, element: UnsafePointer<CGPathElement>) {
       let body = unsafeBitCast(info, to: Body.self)
       body(element.pointee)
     }
     let unsafeBody = unsafeBitCast(body, to: UnsafeMutableRawPointer.self)
-    self.apply(info: unsafeBody, function: callback as! CGPathApplierFunction)
+    self.apply(info: unsafeBody, function: callback)
   }
 }
 
