@@ -10,7 +10,7 @@ import UIKit
 
 extension UIPanGestureRecognizer {
   
-  public func touchPoint(forPosition position : Position, flexibility flx : CGFloat) -> CGPoint {
+  public func touchPoint(forPosition position: Position, flexibility flx: CGFloat) -> CGPoint {
     var touchPoint = CGPoint.zero
     switch position {
     case .left:
@@ -27,13 +27,13 @@ extension UIPanGestureRecognizer {
   
 }
 
-extension UIView {
+extension CGRect {
   func translatedFrame() -> CGRect {
     var frame = CGRect.zero
     if UIScreen.main.bounds.size.width < UIScreen.main.bounds.size.height {
-      frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y, width: self.frame.size.width, height: self.frame.size.height)
+      frame = CGRect(x: origin.x, y: origin.y, width: size.width, height: size.height)
     } else {
-      frame = CGRect(x: self.frame.origin.x, y: self.frame.origin.y, width: self.frame.size.height, height: self.frame.size.width)
+      frame = CGRect(x: origin.x, y: origin.y, width: size.height, height: size.width)
     }
     return frame
   }
@@ -53,25 +53,25 @@ extension CGPath {
 
 public extension UIBezierPath {
   
-  public func jellyPath(_ pm : PathModifiers) {
+  public func jellyPath(_ pm: PathModifiers) {
     self.removeAllPoints()
     self.move(to: pm.fstStartPoint)
     self.addCurve(to: pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
     self.addCurve(to: pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
     self.close()
-  }
+  } 
   
   public func currentPathModifiers() -> PathModifiers? {
     
-    var fstStartPoint : CGPoint?
-    var fstEndPoint : CGPoint?
-    var fstControlPoint1 : CGPoint?
-    var fstControlPoint2 : CGPoint?
+    var fstStartPoint: CGPoint?
+    var fstEndPoint: CGPoint?
+    var fstControlPoint1: CGPoint?
+    var fstControlPoint2: CGPoint?
     
-    var sndStartPoint : CGPoint?
-    var sndEndPoint : CGPoint?
-    var sndControlPoint1 : CGPoint?
-    var sndControlPoint2 : CGPoint?
+    var sndStartPoint: CGPoint?
+    var sndEndPoint: CGPoint?
+    var sndControlPoint1: CGPoint?
+    var sndControlPoint2: CGPoint?
     
     var index = 0
     var error = false

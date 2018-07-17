@@ -13,19 +13,17 @@ public enum Position {
   case left, right, top, bottom
 }
 
-@objc public protocol JellyViewDelegate : class {
-  @objc optional func jellyViewShouldStartDragging(_ jellyView : JellyView) -> Bool
-  @objc optional func jellyViewDidStartDragging(_ curtainControl : JellyView)
-  @objc optional func jellyViewDidEndDragging(_ curtainControl : JellyView)
-  @objc optional func jellyViewActionFired(_ curtainControl : JellyView)
+@objc public protocol JellyViewDelegate: class {
+  @objc optional func jellyViewShouldStartDragging(_ jellyView: JellyView) -> Bool
+  @objc optional func jellyViewDidStartDragging(_ curtainControl: JellyView)
+  @objc optional func jellyViewDidEndDragging(_ curtainControl: JellyView)
+  @objc optional func jellyViewActionFired(_ curtainControl: JellyView)
 }
 
-
-
-public final class JellyView : UIView {
+public final class JellyView: UIView {
   
-  public weak var delegate : JellyViewDelegate?
-  public var infoView : UIView? {
+  public weak var delegate: JellyViewDelegate?
+  public var infoView: UIView? {
     
     willSet {
       if let view = infoView {
@@ -36,26 +34,26 @@ public final class JellyView : UIView {
       innerView.addSubview(infoView!)
     }
   }
-  public var triggerThreshold : CGFloat = 0.4
-  public var innerPointRatio : CGFloat = 0.4
-  public var outerPointRatio : CGFloat = 0.25
-  public var flexibility : CGFloat = 0.7
-  public var jellyMass : CGFloat = 1.0
-  public var springStiffness : CGFloat = 400.0
-  public var offset : CGFloat = 0
+  public var triggerThreshold: CGFloat = 0.4
+  public var innerPointRatio: CGFloat = 0.4
+  public var outerPointRatio: CGFloat = 0.25
+  public var flexibility: CGFloat = 0.7
+  public var jellyMass: CGFloat = 1.0
+  public var springStiffness: CGFloat = 400.0
+  public var offset: CGFloat = 0
   
   private let innerView = UIView()
   private var touchPoint = CGPoint.zero
   private var shapeLayer = CAShapeLayer()
   private let bezierPath = UIBezierPath()
-  private weak var containerView : UIView?
-  private let position : Position
-  private var displayLink : CADisplayLink!
-  private var colorIndex : NSInteger = 0
-  private let colorsArray : Array<UIColor>
+  private weak var containerView: UIView?
+  private let position: Position
+  private var displayLink: CADisplayLink!
+  private var colorIndex: NSInteger = 0
+  private let colorsArray: Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
-  private var shouldStartDragging : Bool {
+  private var shouldStartDragging: Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
     } else {
@@ -65,8 +63,8 @@ public final class JellyView : UIView {
   
   // constants
   private let bezierCurveDelta: CGFloat = 0.3
-  private let innerViewSize : CGFloat = 100
-  private let maxDegreesTransform : CGFloat = 40
+  private let innerViewSize: CGFloat = 100
+  private let maxDegreesTransform: CGFloat = 40
   
   init(position: Position, colors: Array<UIColor>) {
     self.position = position
@@ -122,63 +120,67 @@ extension JellyView {
     
     shapeLayer.fillColor = colorsArray[colorIndex].cgColor
   }
-  
 }
 
 // MARK: - Stretching JellyView
 
-extension JellyView : UIGestureRecognizerDelegate {
-  
-  func connectGestureRecognizer(toView view : UIView) {
+extension JellyView: UIGestureRecognizerDelegate {
+
+  override public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    if gestureRecognizer == self.gestureRecognizer {
+      return shouldStartDragging
+    } else {
+      return super.gestureRecognizerShouldBegin(gestureRecognizer)
+    }
+  }
+
+  func connectGestureRecognizer(toView view: UIView) {
     gestureRecognizer.addTarget(self, action: #selector(JellyView.handlePanGesture(_:)))
     gestureRecognizer.delegate = self
     view.addGestureRecognizer(gestureRecognizer)
   }
   
-  func disconnectGestureRecognizer(fromView view : UIView) {
+  func disconnectGestureRecognizer(fromView view: UIView) {
     gestureRecognizer.removeTarget(self, action: #selector(JellyView.handlePanGesture(_:)))
     gestureRecognizer.delegate = nil
     view.removeGestureRecognizer(gestureRecognizer)
   }
   
-  @objc private func handlePanGesture(_ pan : UIPanGestureRecognizer) {
-    
-    if shouldStartDragging {
-      touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
-      
-      if (pan.state == .began) {
-        self.delegate?.jellyViewDidStartDragging?(self)
-        modifyShapeLayerForTouch()
-      } else if (pan.state == .changed) {
-        modifyShapeLayerForTouch()
-      } else if (pan.state == .ended || pan.state == .cancelled) {
-        
-        self.delegate?.jellyViewDidEndDragging?(self)
-        
-        if shouldInitiateAction() {
-          animateToFinalPosition()
-        } else {
-          animateToInitialPosition()
-        }
+  @objc private func handlePanGesture(_ pan: UIPanGestureRecognizer) {
+
+    touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
+
+    if (pan.state == .began) {
+      self.delegate?.jellyViewDidStartDragging?(self)
+      modifyShapeLayerForTouch()
+    } else if (pan.state == .changed) {
+      modifyShapeLayerForTouch()
+    } else if (pan.state == .ended || pan.state == .cancelled) {
+      self.delegate?.jellyViewDidEndDragging?(self)
+
+      if shouldInitiateAction() {
+        animateToFinalPosition()
+      } else {
+        animateToInitialPosition()
       }
     }
   }
   
   private func shouldInitiateAction() -> Bool {
-    var size : CGFloat
+    var size: CGFloat
     var currentProgress: CGFloat
     switch position {
     case .left:
-      size = self.translatedFrame().size.width
+      size = frame.translatedFrame().size.width
       currentProgress = touchPoint.x
     case .right:
-      size = self.translatedFrame().size.width
+      size = frame.translatedFrame().size.width
       currentProgress = -touchPoint.x
     case .top:
-      size = self.translatedFrame().size.height
+      size = frame.translatedFrame().size.height
       currentProgress = touchPoint.y
     case .bottom:
-      size = self.translatedFrame().size.height
+      size = frame.translatedFrame().size.height
       currentProgress = -touchPoint.y
     }
     
@@ -193,7 +195,7 @@ extension JellyView : UIGestureRecognizerDelegate {
   private func modifyShapeLayerForTouch() {
     let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.translatedFrame(),
+                                                           jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     applyPathModifiers(pathModifiers)
@@ -202,13 +204,13 @@ extension JellyView : UIGestureRecognizerDelegate {
   private func modifyShapeLayerForInitialPosition() {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.translatedFrame(),
+                                                           jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     applyPathModifiers(pathModifiers)
   }
   
-  private func applyPathModifiers(_ pathModifiers : PathModifiers) {
+  private func applyPathModifiers(_ pathModifiers: PathModifiers) {
     bezierPath.jellyPath(pathModifiers)
     updateInnerViewPosition(fromPathModifiers: pathModifiers)
     CATransaction.begin()
@@ -228,7 +230,7 @@ extension JellyView {
     
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.translatedFrame(),
+                                                           jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
@@ -251,7 +253,7 @@ extension JellyView {
     
     let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
-                                                           jellyFrame: self.translatedFrame(),
+                                                           jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: outerPointRatio,
                                                            innerPointRatio: innerPointRatio)
     CATransaction.begin()
@@ -320,7 +322,7 @@ extension JellyView {
                                            controlPoint2: pathModifiers.sndControlPoint2,
                                            endPoint: pathModifiers.sndEndPoint)
     
-    var x, y, width, height : CGFloat
+    var x, y, width, height: CGFloat
     
     switch position {
     case .left:
@@ -354,7 +356,7 @@ extension JellyView {
   
   private func transformInfoView() {
     let tpValue = touchPointValue()
-    var degrees : CGFloat = maxDegreesTransform * tpValue
+    var degrees: CGFloat = maxDegreesTransform * tpValue
     if position == .right || position == .bottom {
       degrees *= -1
     }
@@ -364,10 +366,10 @@ extension JellyView {
   private func touchPointValue() -> CGFloat {
     
     var touchCoord = touchPoint.y
-    var touchAreaSize = self.translatedFrame().size.height
+    var touchAreaSize = frame.translatedFrame().size.height
     if position == .top || position == .bottom {
       touchCoord = touchPoint.x
-      touchAreaSize = self.translatedFrame().size.width
+      touchAreaSize = frame.translatedFrame().size.width
     }
     
     let difference = touchAreaSize - touchCoord
@@ -380,11 +382,11 @@ extension JellyView {
 
 extension JellyView {
   
-  private func pointFromCubicBezierCurve(delta t : CGFloat,
-                                             startPoint p0 : CGPoint,
-                                             controlPoint1 p1 : CGPoint,
-                                             controlPoint2 p2 : CGPoint,
-                                             endPoint p3 : CGPoint) -> CGPoint {
+  private func pointFromCubicBezierCurve(delta t: CGFloat,
+                                             startPoint p0: CGPoint,
+                                             controlPoint1 p1: CGPoint,
+                                             controlPoint2 p2: CGPoint,
+                                             endPoint p3: CGPoint) -> CGPoint {
     
     let x = coordinateFromCubicBezierCurve(delta: t,
                                            startPoint: p0.x,
@@ -400,11 +402,11 @@ extension JellyView {
     return CGPoint(x: x, y: y)
   }
   
-  private func coordinateFromCubicBezierCurve(delta t : CGFloat,
-                                                  startPoint p0 : CGFloat,
-                                                  controlPoint1 p1 : CGFloat,
-                                                  controlPoint2 p2 : CGFloat,
-                                                  endPoint p3 : CGFloat) -> CGFloat {
+  private func coordinateFromCubicBezierCurve(delta t: CGFloat,
+                                                  startPoint p0: CGFloat,
+                                                  controlPoint1 p1: CGFloat,
+                                                  controlPoint2 p2: CGFloat,
+                                                  endPoint p3: CGFloat) -> CGFloat {
     
     // I had to split expression to several parts to stop the compiler's whining
     var x = pow(1 - t, 3) * p0
