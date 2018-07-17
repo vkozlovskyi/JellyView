@@ -17,7 +17,7 @@ public struct PathModifiers {
   var sndEndPoint : CGPoint
   var sndControlPoint1 : CGPoint
   var sndControlPoint2 : CGPoint
-  fileprivate static let extraSpaceDivider : CGFloat = 4
+  private static let extraSpaceDivider : CGFloat = 4
 }
 
 // MARK: - Public Type Methods

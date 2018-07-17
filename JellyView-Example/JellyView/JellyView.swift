@@ -44,18 +44,18 @@ public final class JellyView : UIView {
   public var springStiffness : CGFloat = 400.0
   public var offset : CGFloat = 0
   
-  fileprivate let innerView = UIView()
-  fileprivate var touchPoint = CGPoint.zero
-  fileprivate var shapeLayer = CAShapeLayer()
-  fileprivate let bezierPath = UIBezierPath()
-  fileprivate weak var containerView : UIView?
-  fileprivate let position : Position
-  fileprivate var displayLink : CADisplayLink!
-  fileprivate var colorIndex : NSInteger = 0
-  fileprivate let colorsArray : Array<UIColor>
-  fileprivate let gestureRecognizer = UIPanGestureRecognizer()
-  fileprivate var shouldDisableAnimation = true
-  fileprivate var shouldStartDragging : Bool {
+  private let innerView = UIView()
+  private var touchPoint = CGPoint.zero
+  private var shapeLayer = CAShapeLayer()
+  private let bezierPath = UIBezierPath()
+  private weak var containerView : UIView?
+  private let position : Position
+  private var displayLink : CADisplayLink!
+  private var colorIndex : NSInteger = 0
+  private let colorsArray : Array<UIColor>
+  private let gestureRecognizer = UIPanGestureRecognizer()
+  private var shouldDisableAnimation = true
+  private var shouldStartDragging : Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
     } else {
@@ -64,9 +64,9 @@ public final class JellyView : UIView {
   }
   
   // constants
-  fileprivate let beizerCurveDelta : CGFloat = 0.3
-  fileprivate let innerViewSize : CGFloat = 100
-  fileprivate let maxDegreesTransform : CGFloat = 40
+  private let bezierCurveDelta: CGFloat = 0.3
+  private let innerViewSize : CGFloat = 100
+  private let maxDegreesTransform : CGFloat = 40
   
   init(position: Position, colors: Array<UIColor>) {
     self.position = position
@@ -79,7 +79,7 @@ public final class JellyView : UIView {
     self.addSubview(innerView)
   }
   
-  fileprivate func setupDisplayLink() {
+  private func setupDisplayLink() {
     displayLink = CADisplayLink(target: self, selector: #selector(JellyView.animationInProgress))
     displayLink.add(to: RunLoop.main, forMode: RunLoopMode.commonModes)
     displayLink.isPaused = true
@@ -110,7 +110,7 @@ public final class JellyView : UIView {
 
 extension JellyView {
   
-  fileprivate func updateColors() {
+  private func updateColors() {
     guard let superview = self.superview else { return }
     let currentColor = colorsArray[colorIndex]
     superview.backgroundColor = currentColor
@@ -141,7 +141,7 @@ extension JellyView : UIGestureRecognizerDelegate {
     view.removeGestureRecognizer(gestureRecognizer)
   }
   
-  @objc fileprivate func handlePanGesture(_ pan : UIPanGestureRecognizer) {
+  @objc private func handlePanGesture(_ pan : UIPanGestureRecognizer) {
     
     if shouldStartDragging {
       touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
@@ -164,7 +164,7 @@ extension JellyView : UIGestureRecognizerDelegate {
     }
   }
   
-  fileprivate func shouldInitiateAction() -> Bool {
+  private func shouldInitiateAction() -> Bool {
     var size : CGFloat
     var currentProgress: CGFloat
     switch position {
@@ -190,7 +190,7 @@ extension JellyView : UIGestureRecognizerDelegate {
     }
   }
   
-  fileprivate func modifyShapeLayerForTouch() {
+  private func modifyShapeLayerForTouch() {
     let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: self.translatedFrame(),
@@ -199,7 +199,7 @@ extension JellyView : UIGestureRecognizerDelegate {
     applyPathModifiers(pathModifiers)
   }
   
-  fileprivate func modifyShapeLayerForInitialPosition() {
+  private func modifyShapeLayerForInitialPosition() {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: self.translatedFrame(),
@@ -208,7 +208,7 @@ extension JellyView : UIGestureRecognizerDelegate {
     applyPathModifiers(pathModifiers)
   }
   
-  fileprivate func applyPathModifiers(_ pathModifiers : PathModifiers) {
+  private func applyPathModifiers(_ pathModifiers : PathModifiers) {
     bezierPath.jellyPath(pathModifiers)
     updateInnerViewPosition(fromPathModifiers: pathModifiers)
     CATransaction.begin()
@@ -269,29 +269,29 @@ extension JellyView {
     CATransaction.commit()
   }
   
-  fileprivate func animationToInitialWillStart() {
+  private func animationToInitialWillStart() {
     displayLink.isPaused = false
   }
   
-  @objc fileprivate func animationToInitialDidFinish() {
+  @objc private func animationToInitialDidFinish() {
     if shouldDisableAnimation {
       displayLink.isPaused = true
     }
   }
   
-  fileprivate func animationToFinalWillStart() {
+  private func animationToFinalWillStart() {
     gestureRecognizer.isEnabled = false
     displayLink.isPaused = false
   }
   
-  @objc fileprivate func animationToFinalDidFinish() {
+  @objc private func animationToFinalDidFinish() {
     displayLink.isPaused = true
     gestureRecognizer.isEnabled = true
     updateColors()
     modifyShapeLayerForInitialPosition()
   }
   
-  @objc fileprivate func animationInProgress() {
+  @objc private func animationInProgress() {
     guard let presentationLayer = self.shapeLayer.presentation() else { return }
     guard let path = presentationLayer.path else { return }
     let bezierPath = UIBezierPath(cgPath: path)
@@ -305,10 +305,10 @@ extension JellyView {
 
 extension JellyView {
     
-  fileprivate func updateInnerViewPosition(fromPathModifiers pathModifiers: PathModifiers) {
+  private func updateInnerViewPosition(fromPathModifiers pathModifiers: PathModifiers) {
     
-    let fstDelta = 1 - beizerCurveDelta
-    let sndDelta = beizerCurveDelta
+    let fstDelta = 1 - bezierCurveDelta
+    let sndDelta = bezierCurveDelta
     let point1 = pointFromCubicBezierCurve(delta: fstDelta,
                                            startPoint: pathModifiers.fstStartPoint,
                                            controlPoint1: pathModifiers.fstControlPoint1,
@@ -352,7 +352,7 @@ extension JellyView {
     }
   }
   
-  fileprivate func transformInfoView() {
+  private func transformInfoView() {
     let tpValue = touchPointValue()
     var degrees : CGFloat = maxDegreesTransform * tpValue
     if position == .right || position == .bottom {
@@ -361,7 +361,7 @@ extension JellyView {
     infoView!.transform = CGAffineTransform(rotationAngle: CGFloat(degrees.degreesToRadians))
   }
   
-  fileprivate func touchPointValue() -> CGFloat {
+  private func touchPointValue() -> CGFloat {
     
     var touchCoord = touchPoint.y
     var touchAreaSize = self.translatedFrame().size.height
@@ -380,7 +380,7 @@ extension JellyView {
 
 extension JellyView {
   
-  fileprivate func pointFromCubicBezierCurve(delta t : CGFloat,
+  private func pointFromCubicBezierCurve(delta t : CGFloat,
                                              startPoint p0 : CGPoint,
                                              controlPoint1 p1 : CGPoint,
                                              controlPoint2 p2 : CGPoint,
@@ -400,7 +400,7 @@ extension JellyView {
     return CGPoint(x: x, y: y)
   }
   
-  fileprivate func coordinateFromCubicBezierCurve(delta t : CGFloat,
+  private func coordinateFromCubicBezierCurve(delta t : CGFloat,
                                                   startPoint p0 : CGFloat,
                                                   controlPoint1 p1 : CGFloat,
                                                   controlPoint2 p2 : CGFloat,
