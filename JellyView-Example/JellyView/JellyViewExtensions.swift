@@ -111,3 +111,7 @@ public extension UIBezierPath {
     return pathModifiers
   }
 }
+
+extension CGFloat {
+  var degreesToRadians: Double { return Double(self) * .pi / 180 }
+}

@@ -21,7 +21,7 @@ public enum Position {
 }
 
 public final class JellyView: UIView {
-  
+
   public weak var delegate: JellyViewDelegate?
   public var infoView: UIView? {
     
@@ -53,6 +53,7 @@ public final class JellyView: UIView {
   private let colorsArray: Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
+  private var positionCalculator = PositionCalculator()
   private var shouldStartDragging: Bool {
     if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
       return shouldStartDragging
@@ -311,12 +312,12 @@ extension JellyView {
     
     let fstDelta = 1 - bezierCurveDelta
     let sndDelta = bezierCurveDelta
-    let point1 = pointFromCubicBezierCurve(delta: fstDelta,
+    let point1 = positionCalculator.pointFromCubicBezierCurve(delta: fstDelta,
                                            startPoint: pathModifiers.fstStartPoint,
                                            controlPoint1: pathModifiers.fstControlPoint1,
                                            controlPoint2: pathModifiers.fstControlPoint2,
                                            endPoint: pathModifiers.fstEndPoint)
-    let point2 = pointFromCubicBezierCurve(delta: sndDelta,
+    let point2 = positionCalculator.pointFromCubicBezierCurve(delta: sndDelta,
                                            startPoint: pathModifiers.sndStartPoint,
                                            controlPoint1: pathModifiers.sndControlPoint1,
                                            controlPoint2: pathModifiers.sndControlPoint2,
@@ -378,47 +379,4 @@ extension JellyView {
   }
 }
 
-// MARK: - Coordinates Calculation
-
-extension JellyView {
-  
-  private func pointFromCubicBezierCurve(delta t: CGFloat,
-                                             startPoint p0: CGPoint,
-                                             controlPoint1 p1: CGPoint,
-                                             controlPoint2 p2: CGPoint,
-                                             endPoint p3: CGPoint) -> CGPoint {
-    
-    let x = coordinateFromCubicBezierCurve(delta: t,
-                                           startPoint: p0.x,
-                                           controlPoint1: p1.x,
-                                           controlPoint2: p2.x,
-                                           endPoint: p3.x)
-    
-    let y = coordinateFromCubicBezierCurve(delta: t,
-                                           startPoint: p0.y,
-                                           controlPoint1: p1.y,
-                                           controlPoint2: p2.y,
-                                           endPoint: p3.y)
-    return CGPoint(x: x, y: y)
-  }
-  
-  private func coordinateFromCubicBezierCurve(delta t: CGFloat,
-                                                  startPoint p0: CGFloat,
-                                                  controlPoint1 p1: CGFloat,
-                                                  controlPoint2 p2: CGFloat,
-                                                  endPoint p3: CGFloat) -> CGFloat {
-    
-    // I had to split expression to several parts to stop the compiler's whining
-    var x = pow(1 - t, 3) * p0
-    x += 3 * pow(1 - t, 2) * t * p1
-    x += 3 * (1 - t) * pow(t, 2) * p2
-    x += pow(t, 3) * p3
-    return x
-  }
-}
-
-extension CGFloat {
-  var degreesToRadians: Double { return Double(self) * .pi / 180 }
-  var radiansToDegrees: Double { return Double(self) * 180 / .pi }
-}
 
