@@ -313,15 +313,9 @@ extension JellyView {
     let fstDelta = 1 - bezierCurveDelta
     let sndDelta = bezierCurveDelta
     let point1 = positionCalculator.pointFromCubicBezierCurve(delta: fstDelta,
-                                           startPoint: pathModifiers.fstStartPoint,
-                                           controlPoint1: pathModifiers.fstControlPoint1,
-                                           controlPoint2: pathModifiers.fstControlPoint2,
-                                           endPoint: pathModifiers.fstEndPoint)
+                                                              curveModifiers: pathModifiers.fstCurveModifiers)
     let point2 = positionCalculator.pointFromCubicBezierCurve(delta: sndDelta,
-                                           startPoint: pathModifiers.sndStartPoint,
-                                           controlPoint1: pathModifiers.sndControlPoint1,
-                                           controlPoint2: pathModifiers.sndControlPoint2,
-                                           endPoint: pathModifiers.sndEndPoint)
+                                                              curveModifiers: pathModifiers.sndCurveModifiers)
     
     var x, y, width, height: CGFloat
     
@@ -378,5 +372,3 @@ extension JellyView {
     return result
   }
 }
-
-

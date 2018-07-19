@@ -55,9 +55,13 @@ public extension UIBezierPath {
   
   public func jellyPath(_ pm: PathModifiers) {
     self.removeAllPoints()
-    self.move(to: pm.fstStartPoint)
-    self.addCurve(to: pm.fstEndPoint, controlPoint1: pm.fstControlPoint1, controlPoint2: pm.fstControlPoint2)
-    self.addCurve(to: pm.sndEndPoint, controlPoint1: pm.sndControlPoint1, controlPoint2: pm.sndControlPoint2)
+    self.move(to: pm.fstCurveModifiers.startPoint)
+    self.addCurve(to: pm.fstCurveModifiers.endPoint,
+                  controlPoint1: pm.fstCurveModifiers.controlPoint1,
+                  controlPoint2: pm.fstCurveModifiers.controlPoint2)
+    self.addCurve(to: pm.sndCurveModifiers.endPoint,
+                  controlPoint1: pm.sndCurveModifiers.controlPoint1,
+                  controlPoint2: pm.sndCurveModifiers.controlPoint2)
     self.close()
   } 
   
@@ -98,16 +102,19 @@ public extension UIBezierPath {
     if error {
       return nil
     }
-    
-    let pathModifiers = PathModifiers(fstStartPoint: fstStartPoint!,
-                                      fstEndPoint: fstEndPoint!,
-                                      fstControlPoint1: fstControlPoint1!,
-                                      fstControlPoint2: fstControlPoint2!,
-                                      sndStartPoint: sndStartPoint!,
-                                      sndEndPoint: sndEndPoint!,
-                                      sndControlPoint1: sndControlPoint1!,
-                                      sndControlPoint2: sndControlPoint2!)
-    
+
+    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint!,
+                                           endPoint: fstEndPoint!,
+                                           controlPoint1: fstControlPoint1!,
+                                           controlPoint2: fstControlPoint2!)
+
+    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint!,
+                                           endPoint: sndEndPoint!,
+                                           controlPoint1: sndControlPoint1!,
+                                           controlPoint2: sndControlPoint2!)
+
+    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+
     return pathModifiers
   }
 }

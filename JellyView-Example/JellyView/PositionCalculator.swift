@@ -9,22 +9,19 @@ import UIKit
 class PositionCalculator {
 
   func pointFromCubicBezierCurve(delta t: CGFloat,
-                                         startPoint p0: CGPoint,
-                                         controlPoint1 p1: CGPoint,
-                                         controlPoint2 p2: CGPoint,
-                                         endPoint p3: CGPoint) -> CGPoint {
+                                 curveModifiers: CurveModifiers) -> CGPoint {
 
     let x = coordinateFromCubicBezierCurve(delta: t,
-                                           startPoint: p0.x,
-                                           controlPoint1: p1.x,
-                                           controlPoint2: p2.x,
-                                           endPoint: p3.x)
+                                           startPoint: curveModifiers.startPoint.x,
+                                           controlPoint1: curveModifiers.controlPoint1.x,
+                                           controlPoint2: curveModifiers.controlPoint2.x,
+                                           endPoint: curveModifiers.endPoint.x)
 
     let y = coordinateFromCubicBezierCurve(delta: t,
-                                           startPoint: p0.y,
-                                           controlPoint1: p1.y,
-                                           controlPoint2: p2.y,
-                                           endPoint: p3.y)
+                                           startPoint: curveModifiers.startPoint.y,
+                                           controlPoint1: curveModifiers.controlPoint1.y,
+                                           controlPoint2: curveModifiers.controlPoint2.y,
+                                           endPoint: curveModifiers.endPoint.y)
     return CGPoint(x: x, y: y)
   }
 
