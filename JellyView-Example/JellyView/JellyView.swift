@@ -13,18 +13,9 @@ public enum Position {
   case left, right, top, bottom
 }
 
-@objc public protocol JellyViewDelegate: class {
-  @objc optional func jellyViewShouldStartDragging(_ jellyView: JellyView) -> Bool
-  @objc optional func jellyViewDidStartDragging(_ curtainControl: JellyView)
-  @objc optional func jellyViewDidEndDragging(_ curtainControl: JellyView)
-  @objc optional func jellyViewActionFired(_ curtainControl: JellyView)
-}
-
 public final class JellyView: UIView {
 
-  public weak var delegate: JellyViewDelegate?
   public var infoView: UIView? {
-    
     willSet {
       if let view = infoView {
         view.removeFromSuperview()
@@ -34,6 +25,12 @@ public final class JellyView: UIView {
       innerView.addSubview(infoView!)
     }
   }
+
+  public var isEnabled: Bool = true
+  public var didStartDragging: () -> Void = { }
+  public var actionFired: () -> Void = { }
+  public var didEndDragging: () -> Void = { }
+
   public var triggerThreshold: CGFloat = 0.4
   public var innerPointRatio: CGFloat = 0.4
   public var outerPointRatio: CGFloat = 0.25
@@ -54,14 +51,7 @@ public final class JellyView: UIView {
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
   private var positionCalculator = PositionCalculator()
-  private var shouldStartDragging: Bool {
-    if let shouldStartDragging = delegate?.jellyViewShouldStartDragging?(self) {
-      return shouldStartDragging
-    } else {
-      return true
-    }
-  }
-  
+
   // constants
   private let bezierCurveDelta: CGFloat = 0.3
   private let innerViewSize: CGFloat = 100
@@ -129,7 +119,7 @@ extension JellyView: UIGestureRecognizerDelegate {
 
   override public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
     if gestureRecognizer == self.gestureRecognizer {
-      return shouldStartDragging
+      return isEnabled
     } else {
       return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
@@ -152,12 +142,12 @@ extension JellyView: UIGestureRecognizerDelegate {
     touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
 
     if (pan.state == .began) {
-      self.delegate?.jellyViewDidStartDragging?(self)
+      self.didStartDragging()
       modifyShapeLayerForTouch()
     } else if (pan.state == .changed) {
       modifyShapeLayerForTouch()
     } else if (pan.state == .ended || pan.state == .cancelled) {
-      self.delegate?.jellyViewDidEndDragging?(self)
+      self.didEndDragging()
 
       if shouldInitiateAction() {
         animateToFinalPosition()
@@ -292,6 +282,7 @@ extension JellyView {
     gestureRecognizer.isEnabled = true
     updateColors()
     modifyShapeLayerForInitialPosition()
+    actionFired()
   }
   
   @objc private func animationInProgress() {
