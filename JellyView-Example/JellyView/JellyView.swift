@@ -15,6 +15,23 @@ public enum Position {
 
 public final class JellyView: UIView {
 
+  public class Settings {
+    public var triggerThreshold: CGFloat = 0.4
+    public var innerPointRatio: CGFloat = 0.4
+    public var outerPointRatio: CGFloat = 0.25
+    public var flexibility: CGFloat = 0.7
+    public var jellyMass: CGFloat = 1.0
+    public var springStiffness: CGFloat = 400.0
+    public var offset: CGFloat = 0
+  }
+
+  // Interface
+
+  public var isEnabled: Bool = true
+  public var didStartDragging: () -> Void = { }
+  public var actionDidFire: () -> Void = { }
+  public var didEndDragging: () -> Void = { }
+  public var setupSettings: (Settings) -> Void = { _ in }
   public var infoView: UIView? {
     willSet {
       if let view = infoView {
@@ -26,19 +43,9 @@ public final class JellyView: UIView {
     }
   }
 
-  public var isEnabled: Bool = true
-  public var didStartDragging: () -> Void = { }
-  public var actionFired: () -> Void = { }
-  public var didEndDragging: () -> Void = { }
+  // Private
 
-  public var triggerThreshold: CGFloat = 0.4
-  public var innerPointRatio: CGFloat = 0.4
-  public var outerPointRatio: CGFloat = 0.25
-  public var flexibility: CGFloat = 0.7
-  public var jellyMass: CGFloat = 1.0
-  public var springStiffness: CGFloat = 400.0
-  public var offset: CGFloat = 0
-  
+  private let settings: Settings
   private let innerView = UIView()
   private var touchPoint = CGPoint.zero
   private var shapeLayer = CAShapeLayer()
@@ -47,21 +54,25 @@ public final class JellyView: UIView {
   private let position: Position
   private var displayLink: CADisplayLink!
   private var colorIndex: NSInteger = 0
-  private let colorsArray: Array<UIColor>
+  private let colors: Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
   private var positionCalculator = PositionCalculator()
 
-  // constants
+  // Constants
+
   private let bezierCurveDelta: CGFloat = 0.3
   private let innerViewSize: CGFloat = 100
   private let maxDegreesTransform: CGFloat = 40
   
-  init(position: Position, colors: Array<UIColor>) {
+  init(position: Position,
+       colors: Array<UIColor>,
+       settings: Settings = Settings()) {
     self.position = position
-    self.colorsArray = colors
+    self.colors = colors
+    self.settings = settings
     super.init(frame: CGRect.zero)
-    shapeLayer.fillColor = colorsArray[colorIndex].cgColor
+    shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
     self.backgroundColor = UIColor.clear
     self.layer.insertSublayer(shapeLayer, at: 0)
@@ -101,15 +112,15 @@ extension JellyView {
   
   private func updateColors() {
     guard let superview = self.superview else { return }
-    let currentColor = colorsArray[colorIndex]
+    let currentColor = colors[colorIndex]
     superview.backgroundColor = currentColor
     
     colorIndex += 1
-    if colorIndex > colorsArray.count - 1 {
+    if colorIndex > colors.count - 1 {
       colorIndex = 0
     }
     
-    shapeLayer.fillColor = colorsArray[colorIndex].cgColor
+    shapeLayer.fillColor = colors[colorIndex].cgColor
   }
 }
 
@@ -138,22 +149,26 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
   
   @objc private func handlePanGesture(_ pan: UIPanGestureRecognizer) {
+    if pan.state == .began {
+      setupSettings(settings)
+    }
 
-    touchPoint = pan.touchPoint(forPosition: position, flexibility: flexibility)
+    touchPoint = pan.touchPoint(forPosition: position, flexibility: settings.flexibility)
 
-    if (pan.state == .began) {
-      self.didStartDragging()
+    switch pan.state {
+    case .began:
+      didStartDragging()
       modifyShapeLayerForTouch()
-    } else if (pan.state == .changed) {
+    case .changed:
       modifyShapeLayerForTouch()
-    } else if (pan.state == .ended || pan.state == .cancelled) {
-      self.didEndDragging()
-
+    case .ended, .cancelled:
+      didEndDragging()
       if shouldInitiateAction() {
         animateToFinalPosition()
       } else {
         animateToInitialPosition()
       }
+    default: break
     }
   }
   
@@ -175,7 +190,7 @@ extension JellyView: UIGestureRecognizerDelegate {
       currentProgress = -touchPoint.y
     }
     
-    let maxProgress = size * triggerThreshold
+    let maxProgress = size * settings.triggerThreshold
     if currentProgress >= maxProgress {
       return true
     } else {
@@ -187,8 +202,8 @@ extension JellyView: UIGestureRecognizerDelegate {
     let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: outerPointRatio,
-                                                           innerPointRatio: innerPointRatio)
+                                                           outerPointRatio: settings.outerPointRatio,
+                                                           innerPointRatio: settings.innerPointRatio)
     applyPathModifiers(pathModifiers)
   }
   
@@ -196,8 +211,8 @@ extension JellyView: UIGestureRecognizerDelegate {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: outerPointRatio,
-                                                           innerPointRatio: innerPointRatio)
+                                                           outerPointRatio: settings.outerPointRatio,
+                                                           innerPointRatio: settings.innerPointRatio)
     applyPathModifiers(pathModifiers)
   }
   
@@ -222,13 +237,13 @@ extension JellyView {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: outerPointRatio,
-                                                           innerPointRatio: innerPointRatio)
+                                                           outerPointRatio: settings.outerPointRatio,
+                                                           innerPointRatio: settings.innerPointRatio)
     CATransaction.begin()
     self.animationToInitialWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
-    springAnimation.mass = jellyMass
-    springAnimation.stiffness = springStiffness
+    springAnimation.mass = settings.jellyMass
+    springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
     bezierPath.jellyPath(pathModifiers)
@@ -245,14 +260,14 @@ extension JellyView {
     let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
                                                            touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: outerPointRatio,
-                                                           innerPointRatio: innerPointRatio)
+                                                           outerPointRatio: settings.outerPointRatio,
+                                                           innerPointRatio: settings.innerPointRatio)
     CATransaction.begin()
     self.animationToFinalWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
-    springAnimation.mass = jellyMass
+    springAnimation.mass = settings.jellyMass
     springAnimation.damping = 1000
-    springAnimation.stiffness = springStiffness
+    springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
     bezierPath.jellyPath(pathModifiers)
@@ -282,7 +297,7 @@ extension JellyView {
     gestureRecognizer.isEnabled = true
     updateColors()
     modifyShapeLayerForInitialPosition()
-    actionFired()
+    actionDidFire()
   }
   
   @objc private func animationInProgress() {
@@ -314,23 +329,23 @@ extension JellyView {
     case .left:
       width = innerViewSize
       height = point2.y - point1.y
-      x = point1.x - width + offset
+      x = point1.x - width + settings.offset
       y = point1.y
     case .right:
       width = innerViewSize
       height = point2.y - point1.y
-      x = point1.x - offset
+      x = point1.x - settings.offset
       y = point1.y
     case .top:
       width = point2.x - point1.x
       height = innerViewSize
       x = point1.x
-      y = point1.y - height + offset
+      y = point1.y - height + settings.offset
     case .bottom:
       width = point2.x - point1.x
       height = innerViewSize
       x = point1.x
-      y = point1.y - offset
+      y = point1.y - settings.offset
     }
     
     innerView.frame = CGRect(x: x, y: y, width: width, height: height)

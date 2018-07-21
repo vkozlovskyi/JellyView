@@ -12,8 +12,8 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.view.backgroundColor = colorsArray().last
-    let jellyView = JellyView(position: .left, colors: colorsArray())
+    self.view.backgroundColor = colors().last
+    let jellyView = JellyView(position: .left, colors: colors())
     self.view.addSubview(jellyView)
     let infoLabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 80))
     infoLabel.numberOfLines = 2
@@ -21,17 +21,19 @@ class ViewController: UIViewController {
     infoLabel.text = "Pull To\nRefresh"
     infoLabel.textAlignment = NSTextAlignment.center
     jellyView.infoView = infoLabel
-    jellyView.offset = -30
+    jellyView.setupSettings = { settings in
+      settings.offset = -30
+    }
   }
   
-  func colorsArray() -> Array<UIColor> {
-    let colorsArray = [
+  func colors() -> Array<UIColor> {
+    let colors = [
       UIColor(red: 117.0/255.0, green: 170.0/255.0, blue: 255.0/255.0, alpha: 1.0),
       UIColor(red: 255.0/255.0, green: 233.0/255.0, blue: 124.0/255.0, alpha: 1.0),
       UIColor(red: 194.0/255.0, green: 227.0/255.0, blue: 122.0/255.0, alpha: 1.0),
       UIColor(red: 175.0/255.0, green: 135.0/255.0, blue: 223.0/255.0, alpha: 1.0),
       UIColor(red: 255.0/255.0, green: 188.0/255.0, blue: 125.0/255.0, alpha: 1.0)]
-    return colorsArray
+    return colors
   }
   
   override func didReceiveMemoryWarning() {
