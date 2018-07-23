@@ -56,58 +56,48 @@ public extension PathModifiers {
   }
   
   static func initialPathModifiers(forPosition position: Position,
-                                               touchPoint: CGPoint,
                                                jellyFrame: CGRect,
                                                outerPointRatio: CGFloat,
                                                innerPointRatio: CGFloat) -> PathModifiers {
     switch position {
     case .left:
-      return PathModifiers.initialLeftPathModifiers(touchPoint: touchPoint,
-                                                    jellyFrame: jellyFrame,
+      return PathModifiers.initialLeftPathModifiers(jellyFrame: jellyFrame,
                                                     outerPointRatio: outerPointRatio,
                                                     innerPointRatio: innerPointRatio)
     case .right:
-      return PathModifiers.initialRightPathModifiers(touchPoint: touchPoint,
-                                              jellyFrame: jellyFrame,
-                                              outerPointRatio: outerPointRatio,
-                                              innerPointRatio: innerPointRatio)
+      return PathModifiers.initialRightPathModifiers(jellyFrame: jellyFrame,
+                                                     outerPointRatio: outerPointRatio,
+                                                     innerPointRatio: innerPointRatio)
     case .top:
-      return PathModifiers.initialTopPathModifiers(touchPoint: touchPoint,
-                                                   jellyFrame: jellyFrame,
+      return PathModifiers.initialTopPathModifiers(jellyFrame: jellyFrame,
                                                    outerPointRatio: outerPointRatio,
                                                    innerPointRatio: innerPointRatio)
     case .bottom:
-      return PathModifiers.initialBottomPathModifiers(touchPoint: touchPoint,
-                                                      jellyFrame: jellyFrame,
+      return PathModifiers.initialBottomPathModifiers(jellyFrame: jellyFrame,
                                                       outerPointRatio: outerPointRatio,
                                                       innerPointRatio: innerPointRatio)
     }
   }
   
   static func expandedPathModifiers(forPosition position: Position,
-                                               touchPoint: CGPoint,
                                                jellyFrame: CGRect,
                                                outerPointRatio: CGFloat,
                                                innerPointRatio: CGFloat) -> PathModifiers {
     switch position {
     case .left:
-      return PathModifiers.expandedLeftPathModifiers(touchPoint: touchPoint,
-                                                   jellyFrame: jellyFrame,
+      return PathModifiers.expandedLeftPathModifiers(jellyFrame: jellyFrame,
                                                    outerPointRatio: outerPointRatio,
                                                    innerPointRatio: innerPointRatio)
     case .right:
-      return PathModifiers.expandedRightPathModifiers(touchPoint: touchPoint,
-                                                     jellyFrame: jellyFrame,
+      return PathModifiers.expandedRightPathModifiers(jellyFrame: jellyFrame,
                                                      outerPointRatio: outerPointRatio,
                                                      innerPointRatio: innerPointRatio)
     case .top:
-      return PathModifiers.expandedTopPathModifiers(touchPoint: touchPoint,
-                                                  jellyFrame: jellyFrame,
+      return PathModifiers.expandedTopPathModifiers(jellyFrame: jellyFrame,
                                                   outerPointRatio: outerPointRatio,
                                                   innerPointRatio: innerPointRatio)
     case .bottom:
-      return PathModifiers.expandedBottomPathModifiers(touchPoint: touchPoint,
-                                                     jellyFrame: jellyFrame,
+      return PathModifiers.expandedBottomPathModifiers(jellyFrame: jellyFrame,
                                                      outerPointRatio: outerPointRatio,
                                                      innerPointRatio: innerPointRatio)
     }
@@ -117,12 +107,12 @@ public extension PathModifiers {
 // MARK: - PathModifiers for touchPoint
 
 private extension PathModifiers {
-  
+
   static func leftPathModifiers(touchPoint: CGPoint,
-                                           jellyFrame: CGRect,
-                                           outerPointRatio: CGFloat,
-                                           innerPointRatio: CGFloat) -> PathModifiers {
-    
+                                jellyFrame: CGRect,
+                                outerPointRatio: CGFloat,
+                                innerPointRatio: CGFloat) -> PathModifiers {
+
     let height = jellyFrame.height
     let outerDelta = outerPointRatio * height
     let extraSpace = jellyFrame.height / extraSpaceDivider
@@ -150,12 +140,12 @@ private extension PathModifiers {
     
     return pathModifiers
   }
-  
+
   static func rightPathModifiers(touchPoint: CGPoint,
-                                            jellyFrame: CGRect,
-                                            outerPointRatio: CGFloat,
-                                            innerPointRatio: CGFloat) -> PathModifiers {
-    
+                                 jellyFrame: CGRect,
+                                 outerPointRatio: CGFloat,
+                                 innerPointRatio: CGFloat) -> PathModifiers {
+
     let height = jellyFrame.height
     let width = jellyFrame.width
     let outerDelta = outerPointRatio * height
@@ -185,12 +175,12 @@ private extension PathModifiers {
 
     return pathModifiers
   }
-  
+
   static func topPathModifiers(touchPoint: CGPoint,
-                                          jellyFrame: CGRect,
-                                          outerPointRatio: CGFloat,
-                                          innerPointRatio: CGFloat) -> PathModifiers {
-    
+                               jellyFrame: CGRect,
+                               outerPointRatio: CGFloat,
+                               innerPointRatio: CGFloat) -> PathModifiers {
+
     let width = jellyFrame.width
     let outerDelta = outerPointRatio * width
     let extraSpace = jellyFrame.width / extraSpaceDivider
@@ -218,12 +208,12 @@ private extension PathModifiers {
 
     return pathModifiers
   }
-  
+
   static func bottomPathModifiers(touchPoint: CGPoint,
-                                             jellyFrame: CGRect,
-                                             outerPointRatio: CGFloat,
-                                             innerPointRatio: CGFloat) -> PathModifiers {
-    
+                                  jellyFrame: CGRect,
+                                  outerPointRatio: CGFloat,
+                                  innerPointRatio: CGFloat) -> PathModifiers {
+
     let width = jellyFrame.width
     let height = jellyFrame.height
     let outerDelta = outerPointRatio * width
@@ -260,8 +250,7 @@ private extension PathModifiers {
 
 private extension PathModifiers {
   
-  static func initialLeftPathModifiers(touchPoint: CGPoint,
-                                       jellyFrame: CGRect,
+  static func initialLeftPathModifiers(jellyFrame: CGRect,
                                        outerPointRatio: CGFloat,
                                        innerPointRatio: CGFloat) -> PathModifiers {
     
@@ -294,10 +283,9 @@ private extension PathModifiers {
     return pathModifiers
   }
   
-  static func initialRightPathModifiers(touchPoint: CGPoint,
-                                            jellyFrame: CGRect,
-                                            outerPointRatio: CGFloat,
-                                            innerPointRatio: CGFloat) -> PathModifiers {
+  static func initialRightPathModifiers(jellyFrame: CGRect,
+                                        outerPointRatio: CGFloat,
+                                        innerPointRatio: CGFloat) -> PathModifiers {
     
     let height = jellyFrame.height
     let width = jellyFrame.width
@@ -329,8 +317,7 @@ private extension PathModifiers {
     return pathModifiers
   }
   
-  static func initialTopPathModifiers(touchPoint: CGPoint,
-                                      jellyFrame: CGRect,
+  static func initialTopPathModifiers(jellyFrame: CGRect,
                                       outerPointRatio: CGFloat,
                                       innerPointRatio: CGFloat) -> PathModifiers {
     let width = jellyFrame.width
@@ -362,8 +349,7 @@ private extension PathModifiers {
     return pathModifiers
   }
   
-  static func initialBottomPathModifiers(touchPoint: CGPoint,
-                                         jellyFrame: CGRect,
+  static func initialBottomPathModifiers(jellyFrame: CGRect,
                                          outerPointRatio: CGFloat,
                                          innerPointRatio: CGFloat) -> PathModifiers {
     let width = jellyFrame.width
@@ -402,10 +388,9 @@ private extension PathModifiers {
 
 private extension PathModifiers {
   
-  static func expandedLeftPathModifiers(touchPoint: CGPoint,
-                                                 jellyFrame: CGRect,
-                                                 outerPointRatio: CGFloat,
-                                                 innerPointRatio: CGFloat) -> PathModifiers {
+  static func expandedLeftPathModifiers(jellyFrame: CGRect,
+                                        outerPointRatio: CGFloat,
+                                        innerPointRatio: CGFloat) -> PathModifiers {
     
     let extraSpace = jellyFrame.height / extraSpaceDivider
     let height = jellyFrame.height
@@ -436,10 +421,9 @@ private extension PathModifiers {
     return pathModifiers
   }
   
-  static func expandedRightPathModifiers(touchPoint: CGPoint,
-                                                   jellyFrame: CGRect,
-                                                   outerPointRatio: CGFloat,
-                                                   innerPointRatio: CGFloat) -> PathModifiers {
+  static func expandedRightPathModifiers(jellyFrame: CGRect,
+                                         outerPointRatio: CGFloat,
+                                         innerPointRatio: CGFloat) -> PathModifiers {
     
     let extraSpace = jellyFrame.height / extraSpaceDivider
     let height = jellyFrame.height
@@ -473,10 +457,9 @@ private extension PathModifiers {
     return pathModifiers
   }
   
-  static func expandedTopPathModifiers(touchPoint: CGPoint,
-                                                jellyFrame: CGRect,
-                                                outerPointRatio: CGFloat,
-                                                innerPointRatio: CGFloat) -> PathModifiers {
+  static func expandedTopPathModifiers(jellyFrame: CGRect,
+                                       outerPointRatio: CGFloat,
+                                       innerPointRatio: CGFloat) -> PathModifiers {
     
     let extraSpace = jellyFrame.width / extraSpaceDivider
     let height = jellyFrame.height * 2
@@ -508,10 +491,9 @@ private extension PathModifiers {
     
   }
   
-  static func expandedBottomPathModifiers(touchPoint: CGPoint,
-                                                   jellyFrame: CGRect,
-                                                   outerPointRatio: CGFloat,
-                                                   innerPointRatio: CGFloat) -> PathModifiers {
+  static func expandedBottomPathModifiers(jellyFrame: CGRect,
+                                          outerPointRatio: CGFloat,
+                                          innerPointRatio: CGFloat) -> PathModifiers {
     
     let extraSpace = jellyFrame.width / extraSpaceDivider
     let height = jellyFrame.height

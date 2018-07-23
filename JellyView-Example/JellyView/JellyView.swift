@@ -209,13 +209,12 @@ extension JellyView: UIGestureRecognizerDelegate {
   
   private func modifyShapeLayerForInitialPosition() {
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
-                                                           touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: settings.outerPointRatio,
                                                            innerPointRatio: settings.innerPointRatio)
     applyPathModifiers(pathModifiers)
   }
-  
+
   private func applyPathModifiers(_ pathModifiers: PathModifiers) {
     bezierPath.jellyPath(pathModifiers)
     updateInnerViewPosition(fromPathModifiers: pathModifiers)
@@ -235,7 +234,6 @@ extension JellyView {
     shouldDisableAnimation = displayLink.isPaused
     
     let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
-                                                           touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: settings.outerPointRatio,
                                                            innerPointRatio: settings.innerPointRatio)
@@ -258,7 +256,6 @@ extension JellyView {
     shouldDisableAnimation = displayLink.isPaused
     
     let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
-                                                           touchPoint: touchPoint,
                                                            jellyFrame: frame.translatedFrame(),
                                                            outerPointRatio: settings.outerPointRatio,
                                                            innerPointRatio: settings.innerPointRatio)
