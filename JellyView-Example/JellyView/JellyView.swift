@@ -58,7 +58,12 @@ public final class JellyView: UIView {
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
   private var positionCalculator = PositionCalculator()
-
+  private var pathInputData: PathInputData {
+    return PathInputData(touchPoint: touchPoint,
+                         frame: frame.translatedFrame(),
+                         innerPointRatio: settings.innerPointRatio,
+                         outerPointRatio: settings.outerPointRatio)
+  }
   // Constants
 
   private let bezierCurveDelta: CGFloat = 0.3
@@ -78,7 +83,7 @@ public final class JellyView: UIView {
     self.layer.insertSublayer(shapeLayer, at: 0)
     self.addSubview(innerView)
   }
-  
+
   private func setupDisplayLink() {
     displayLink = CADisplayLink(target: self, selector: #selector(JellyView.animationInProgress))
     displayLink.add(to: RunLoop.main, forMode: RunLoopMode.commonModes)
@@ -98,6 +103,7 @@ public final class JellyView: UIView {
     guard let superview = self.superview else { return }
     connectGestureRecognizer(toView: superview)
     self.frame = superview.bounds
+    setInnerViewInitialPosition()
   }
   
   public override func removeFromSuperview() {
@@ -109,7 +115,13 @@ public final class JellyView: UIView {
 }
 
 extension JellyView {
-  
+
+  private func setInnerViewInitialPosition() {
+    setupSettings(settings)
+    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
+    updateInnerViewPosition(fromPathModifiers: pathModifiers)
+  }
+
   private func updateColors() {
     guard let superview = self.superview else { return }
     let currentColor = colors[colorIndex]
@@ -199,19 +211,12 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
   
   private func modifyShapeLayerForTouch() {
-    let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position,
-                                                           touchPoint: touchPoint,
-                                                           jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: settings.outerPointRatio,
-                                                           innerPointRatio: settings.innerPointRatio)
+    let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position, inputData: pathInputData)
     applyPathModifiers(pathModifiers)
   }
   
   private func modifyShapeLayerForInitialPosition() {
-    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
-                                                           jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: settings.outerPointRatio,
-                                                           innerPointRatio: settings.innerPointRatio)
+    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
     applyPathModifiers(pathModifiers)
   }
 
@@ -233,10 +238,7 @@ extension JellyView {
     
     shouldDisableAnimation = displayLink.isPaused
     
-    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position,
-                                                           jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: settings.outerPointRatio,
-                                                           innerPointRatio: settings.innerPointRatio)
+    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
     CATransaction.begin()
     self.animationToInitialWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
@@ -255,10 +257,7 @@ extension JellyView {
     
     shouldDisableAnimation = displayLink.isPaused
     
-    let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position,
-                                                           jellyFrame: frame.translatedFrame(),
-                                                           outerPointRatio: settings.outerPointRatio,
-                                                           innerPointRatio: settings.innerPointRatio)
+    let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position, inputData: pathInputData)
     CATransaction.begin()
     self.animationToFinalWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
