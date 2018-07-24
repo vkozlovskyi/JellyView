@@ -58,6 +58,7 @@ public final class JellyView: UIView {
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
   private var positionCalculator = PositionCalculator()
+  private var isRendered = false
   private var pathInputData: PathInputData {
     return PathInputData(touchPoint: touchPoint,
                          frame: frame.translatedFrame(),
@@ -97,7 +98,15 @@ public final class JellyView: UIView {
   public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     return self.superview
   }
-  
+
+  public override func layoutSubviews() {
+    super.layoutSubviews()
+    if !isRendered {
+      isRendered = true
+      setInnerViewInitialPosition()
+    }
+  }
+
   public override func didMoveToSuperview() {
     super.didMoveToSuperview()
     guard let superview = self.superview else { return }
