@@ -15,7 +15,7 @@ public struct PathInputData {
   let outerPointRatio: CGFloat
 }
 
-public struct CurveModifiers {
+public struct Curve {
   let startPoint: CGPoint
   let endPoint: CGPoint
   let controlPoint1: CGPoint
@@ -23,10 +23,11 @@ public struct CurveModifiers {
 }
 
 public struct PathModifiers {
-  let fstCurveModifiers: CurveModifiers
-  let sndCurveModifiers: CurveModifiers
-  private static let extraSpaceDivider: CGFloat = 4
+  let fstCurve: Curve
+  let sndCurve: Curve
 }
+
+private let extraSpaceDivider: CGFloat = 4
 
 // MARK: - Public Type Methods
 
@@ -91,17 +92,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: inputData.touchPoint.x, y: inputData.touchPoint.y + outerDelta)
     let sndControlPoint2 = CGPoint(x: 0, y: inputData.touchPoint.y + (height - inputData.touchPoint.y) * (1.0 - inputData.innerPointRatio))
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
     
     return pathModifiers
   }
@@ -123,17 +124,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: curvePointX, y: inputData.touchPoint.y + outerDelta)
     let sndControlPoint2 = CGPoint(x: width, y: inputData.touchPoint.y + (height - inputData.touchPoint.y) * (1.0 - inputData.innerPointRatio))
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -153,17 +154,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: inputData.touchPoint.x + outerDelta, y: inputData.touchPoint.y)
     let sndControlPoint2 = CGPoint(x: inputData.touchPoint.x + (width - inputData.touchPoint.x) * (1.0 - inputData.innerPointRatio), y: 0)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -185,17 +186,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: inputData.touchPoint.x + outerDelta, y: curvePointY)
     let sndControlPoint2 = CGPoint(x: inputData.touchPoint.x + (width - inputData.touchPoint.x) * (1.0 - inputData.innerPointRatio), y: height)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -222,17 +223,17 @@ private extension PathModifiers {
     let sndControlPoint1: CGPoint = CGPoint(x: 0, y: centerY + outerDelta)
     let sndControlPoint2: CGPoint = CGPoint(x: 0, y: centerY + (height - centerY) * (1.0 - inputData.innerPointRatio))
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -254,17 +255,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: width, y: centerY + outerDelta)
     let sndControlPoint2 = CGPoint(x: width, y: centerY + (height - centerY) * (1.0 - inputData.innerPointRatio))
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -284,17 +285,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: centerY + outerDelta, y: 0)
     let sndControlPoint2: CGPoint = CGPoint(x: centerY + (width - centerY) * (1.0 - inputData.innerPointRatio), y: 0)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -315,17 +316,17 @@ private extension PathModifiers {
     let sndControlPoint1 = CGPoint(x: centerY + outerDelta, y: height)
     let sndControlPoint2 = CGPoint(x: centerY + (width - centerY) * (1.0 - inputData.innerPointRatio), y: height)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -352,17 +353,17 @@ private extension PathModifiers {
     let sndControlPoint1: CGPoint = CGPoint(x: width, y: centerY + extraSpace)
     let sndControlPoint2: CGPoint = CGPoint(x: width / 2, y: height + extraSpace)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -386,17 +387,17 @@ private extension PathModifiers {
     let sndControlPoint1: CGPoint = CGPoint(x: widthFinalPoint, y: centerY + extraSpace)
     let sndControlPoint2: CGPoint = CGPoint(x: delta / 2, y: height + extraSpace)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
@@ -417,17 +418,17 @@ private extension PathModifiers {
     let sndControlPoint1: CGPoint = CGPoint(x: centerX + extraSpace, y: height)
     let sndControlPoint2: CGPoint = CGPoint(x: width + extraSpace, y: height / 2)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
     
@@ -452,17 +453,17 @@ private extension PathModifiers {
     let sndControlPoint1: CGPoint = CGPoint(x: centerX + extraSpace, y: heightFinalPoint)
     let sndControlPoint2: CGPoint = CGPoint(x: width + extraSpace, y: delta)
 
-    let fstCurveModifiers = CurveModifiers(startPoint: fstStartPoint,
-                                           endPoint: fstEndPoint,
-                                           controlPoint1: fstControlPoint1,
-                                           controlPoint2: fstControlPoint2)
+    let fstCurve = Curve(startPoint: fstStartPoint,
+                         endPoint: fstEndPoint,
+                         controlPoint1: fstControlPoint1,
+                         controlPoint2: fstControlPoint2)
 
-    let sndCurveModifiers = CurveModifiers(startPoint: sndStartPoint,
-                                           endPoint: sndEndPoint,
-                                           controlPoint1: sndControlPoint1,
-                                           controlPoint2: sndControlPoint2)
+    let sndCurve = Curve(startPoint: sndStartPoint,
+                         endPoint: sndEndPoint,
+                         controlPoint1: sndControlPoint1,
+                         controlPoint2: sndControlPoint2)
 
-    let pathModifiers = PathModifiers(fstCurveModifiers: fstCurveModifiers, sndCurveModifiers: sndCurveModifiers)
+    let pathModifiers = PathModifiers(fstCurve: fstCurve, sndCurve: sndCurve)
 
     return pathModifiers
   }
