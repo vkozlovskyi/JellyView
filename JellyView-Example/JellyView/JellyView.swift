@@ -46,6 +46,7 @@ public final class JellyView: UIView {
   // Private
 
   private let settings: Settings
+  private let pathBuilder: PathBuilder!
   private let innerView = UIView()
   private var touchPoint = CGPoint.zero
   private var shapeLayer = CAShapeLayer()
@@ -65,18 +66,14 @@ public final class JellyView: UIView {
                          innerPointRatio: settings.innerPointRatio,
                          outerPointRatio: settings.outerPointRatio)
   }
-  // Constants
 
-  private let bezierCurveDelta: CGFloat = 0.3
-  private let innerViewSize: CGFloat = 100
-  private let maxDegreesTransform: CGFloat = 40
-  
   init(position: Position,
        colors: Array<UIColor>,
        settings: Settings = Settings()) {
     self.position = position
     self.colors = colors
     self.settings = settings
+    self.pathBuilder = createPathBuilder(with: position)
     super.init(frame: CGRect.zero)
     shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
@@ -127,8 +124,8 @@ extension JellyView {
 
   private func setInnerViewInitialPosition() {
     setupSettings(settings)
-    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
-    updateInnerViewPosition(fromPathModifiers: pathModifiers)
+    let path = pathBuilder.buildInitialPath(inputData: pathInputData)
+    updateInnerViewPosition(from: path)
   }
 
   private func updateColors() {
@@ -220,18 +217,18 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
   
   private func modifyShapeLayerForTouch() {
-    let pathModifiers = PathModifiers.currentPathModifiers(forPosition: position, inputData: pathInputData)
-    applyPathModifiers(pathModifiers)
+    let path = pathBuilder.buildCurrentPath(inputData: pathInputData)
+    applyPath(path)
   }
   
   private func modifyShapeLayerForInitialPosition() {
-    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
-    applyPathModifiers(pathModifiers)
+    let path = pathBuilder.buildInitialPath(inputData: pathInputData)
+    applyPath(path)
   }
 
-  private func applyPathModifiers(_ pathModifiers: PathModifiers) {
-    bezierPath.jellyPath(pathModifiers)
-    updateInnerViewPosition(fromPathModifiers: pathModifiers)
+  private func applyPath(_ path: Path) {
+    bezierPath.jellyPath(path)
+    updateInnerViewPosition(from: path)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = bezierPath.cgPath
@@ -247,7 +244,7 @@ extension JellyView {
     
     shouldDisableAnimation = displayLink.isPaused
     
-    let pathModifiers = PathModifiers.initialPathModifiers(forPosition: position, inputData: pathInputData)
+    let path = pathBuilder.buildInitialPath(inputData: pathInputData)
     CATransaction.begin()
     self.animationToInitialWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
@@ -255,7 +252,7 @@ extension JellyView {
     springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
-    bezierPath.jellyPath(pathModifiers)
+    bezierPath.jellyPath(path)
     shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToInitialDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
@@ -266,7 +263,7 @@ extension JellyView {
     
     shouldDisableAnimation = displayLink.isPaused
     
-    let pathModifiers = PathModifiers.expandedPathModifiers(forPosition: position, inputData: pathInputData)
+    let path = pathBuilder.buildExpandedPath(inputData: pathInputData)
     CATransaction.begin()
     self.animationToFinalWillStart()
     let springAnimation = CASpringAnimation(keyPath: "path")
@@ -275,7 +272,7 @@ extension JellyView {
     springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
-    bezierPath.jellyPath(pathModifiers)
+    bezierPath.jellyPath(path)
     shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToFinalDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
@@ -310,7 +307,7 @@ extension JellyView {
     guard let path = presentationLayer.path else { return }
     let bezierPath = UIBezierPath(cgPath: path)
     if let pathModifiers = bezierPath.currentPathModifiers() {
-      updateInnerViewPosition(fromPathModifiers: pathModifiers)
+      updateInnerViewPosition(from: pathModifiers)
     }
   }
 }
@@ -319,36 +316,36 @@ extension JellyView {
 
 extension JellyView {
     
-  private func updateInnerViewPosition(fromPathModifiers pathModifiers: PathModifiers) {
+  private func updateInnerViewPosition(from path: Path) {
     
-    let fstDelta = 1 - bezierCurveDelta
-    let sndDelta = bezierCurveDelta
+    let fstDelta = 1 - Constants.bezierCurveDelta
+    let sndDelta = Constants.bezierCurveDelta
     let point1 = positionCalculator.pointFromCubicBezierCurve(delta: fstDelta,
-                                                              curve: pathModifiers.fstCurve)
+                                                              curve: path.fstCurve)
     let point2 = positionCalculator.pointFromCubicBezierCurve(delta: sndDelta,
-                                                              curve: pathModifiers.sndCurve)
+                                                              curve: path.sndCurve)
     
     var x, y, width, height: CGFloat
     
     switch position {
     case .left:
-      width = innerViewSize
+      width = Constants.innerViewSize
       height = point2.y - point1.y
       x = point1.x - width + settings.offset
       y = point1.y
     case .right:
-      width = innerViewSize
+      width = Constants.innerViewSize
       height = point2.y - point1.y
       x = point1.x - settings.offset
       y = point1.y
     case .top:
       width = point2.x - point1.x
-      height = innerViewSize
+      height = Constants.innerViewSize
       x = point1.x
       y = point1.y - height + settings.offset
     case .bottom:
       width = point2.x - point1.x
-      height = innerViewSize
+      height = Constants.innerViewSize
       x = point1.x
       y = point1.y - settings.offset
     }
@@ -362,7 +359,7 @@ extension JellyView {
   
   private func transformInfoView() {
     let tpValue = touchPointValue()
-    var degrees: CGFloat = maxDegreesTransform * tpValue
+    var degrees: CGFloat = Constants.maxDegreesTransform * tpValue
     if position == .right || position == .bottom {
       degrees *= -1
     }
