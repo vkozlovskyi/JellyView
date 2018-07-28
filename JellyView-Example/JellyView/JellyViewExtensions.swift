@@ -53,7 +53,7 @@ extension CGPath {
 
 public extension UIBezierPath {
   
-  public func jellyPath(_ pm: Path) {
+  public func setPath(_ pm: Path) {
     self.removeAllPoints()
     self.move(to: pm.fstCurve.startPoint)
     self.addCurve(to: pm.fstCurve.endPoint,
@@ -65,7 +65,7 @@ public extension UIBezierPath {
     self.close()
   } 
   
-  public func currentPathModifiers() -> Path? {
+  public func currentPath() -> Path? {
     
     var fstStartPoint: CGPoint?
     var fstEndPoint: CGPoint?
@@ -113,9 +113,9 @@ public extension UIBezierPath {
                          controlPoint1: sndControlPoint1!,
                          controlPoint2: sndControlPoint2!)
 
-    let pathModifiers = Path(fstCurve: fstCurve, sndCurve: sndCurve)
+    let path = Path(fstCurve: fstCurve, sndCurve: sndCurve)
 
-    return pathModifiers
+    return path
   }
 }
 

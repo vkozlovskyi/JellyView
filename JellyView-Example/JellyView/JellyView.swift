@@ -54,7 +54,7 @@ public final class JellyView: UIView {
   private weak var containerView: UIView?
   private let position: Position
   private var displayLink: CADisplayLink!
-  private var colorIndex: NSInteger = 0
+  private var colorIndex: Int = 0
   private let colors: Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
@@ -227,7 +227,7 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
 
   private func applyPath(_ path: Path) {
-    bezierPath.jellyPath(path)
+    bezierPath.setPath(path)
     updateInnerViewPosition(from: path)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
@@ -252,7 +252,7 @@ extension JellyView {
     springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
-    bezierPath.jellyPath(path)
+    bezierPath.setPath(path)
     shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToInitialDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
@@ -272,7 +272,7 @@ extension JellyView {
     springAnimation.stiffness = settings.springStiffness
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
-    bezierPath.jellyPath(path)
+    bezierPath.setPath(path)
     shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToFinalDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
@@ -306,8 +306,8 @@ extension JellyView {
     guard let presentationLayer = self.shapeLayer.presentation() else { return }
     guard let path = presentationLayer.path else { return }
     let bezierPath = UIBezierPath(cgPath: path)
-    if let pathModifiers = bezierPath.currentPathModifiers() {
-      updateInnerViewPosition(from: pathModifiers)
+    if let path = bezierPath.currentPath() {
+      updateInnerViewPosition(from: path)
     }
   }
 }
