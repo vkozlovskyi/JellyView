@@ -10,9 +10,9 @@ import UIKit
 
 extension UIPanGestureRecognizer {
   
-  public func touchPoint(forPosition position: Position, flexibility flx: CGFloat) -> CGPoint {
+  public func touchPoint(forSide side: JellyView.Side, flexibility flx: CGFloat) -> CGPoint {
     var touchPoint = CGPoint.zero
-    switch position {
+    switch side {
     case .left:
       touchPoint = CGPoint(x: self.translation(in: self.view).x * flx, y: self.location(in: self.view).y)
     case .right:
@@ -51,9 +51,9 @@ extension CGPath {
   }
 }
 
-public extension UIBezierPath {
+extension UIBezierPath {
   
-  public func setPath(_ pm: Path) {
+  func setPath(_ pm: Path) {
     self.removeAllPoints()
     self.move(to: pm.fstCurve.startPoint)
     self.addCurve(to: pm.fstCurve.endPoint,
@@ -65,7 +65,7 @@ public extension UIBezierPath {
     self.close()
   } 
   
-  public func currentPath() -> Path? {
+  func currentPath() -> Path? {
     
     var fstStartPoint: CGPoint?
     var fstEndPoint: CGPoint?

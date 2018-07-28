@@ -5,21 +5,21 @@
 
 import UIKit
 
-public struct PathInputData {
+struct PathInputData {
   let touchPoint: CGPoint
   let frame: CGRect
   let innerPointRatio: CGFloat
   let outerPointRatio: CGFloat
 }
 
-public struct Curve {
+struct Curve {
   let startPoint: CGPoint
   let endPoint: CGPoint
   let controlPoint1: CGPoint
   let controlPoint2: CGPoint
 }
 
-public struct Path {
+struct Path {
   let fstCurve: Curve
   let sndCurve: Curve
 }

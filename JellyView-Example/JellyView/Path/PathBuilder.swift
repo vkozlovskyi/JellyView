@@ -11,8 +11,8 @@ protocol PathBuilder {
   func buildExpandedPath(inputData: PathInputData) -> Path
 }
 
-func createPathBuilder(with position: Position) -> PathBuilder {
-  switch position {
+func createPathBuilder(side: JellyView.Side) -> PathBuilder {
+  switch side {
   case .left:
     return LeftSidePathBuilder()
   case .right:

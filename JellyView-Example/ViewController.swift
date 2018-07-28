@@ -13,7 +13,7 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.view.backgroundColor = colors().last
-    let jellyView = JellyView(position: .left, colors: colors())
+    let jellyView = JellyView(side: .left, colors: colors())
     self.view.addSubview(jellyView)
     let infoLabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 80))
     infoLabel.numberOfLines = 2

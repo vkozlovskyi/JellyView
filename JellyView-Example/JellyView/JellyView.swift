@@ -9,11 +9,11 @@
 
 import UIKit
 
-public enum Position {
-  case left, right, top, bottom
-}
-
 public final class JellyView: UIView {
+
+  public enum Side {
+    case left, right, top, bottom
+  }
 
   public class Settings {
     public var triggerThreshold: CGFloat = 0.4
@@ -52,7 +52,7 @@ public final class JellyView: UIView {
   private var shapeLayer = CAShapeLayer()
   private let bezierPath = UIBezierPath()
   private weak var containerView: UIView?
-  private let position: Position
+  private let side: Side
   private var displayLink: CADisplayLink!
   private var colorIndex: Int = 0
   private let colors: Array<UIColor>
@@ -67,13 +67,13 @@ public final class JellyView: UIView {
                          outerPointRatio: settings.outerPointRatio)
   }
 
-  init(position: Position,
+  init(side: Side,
        colors: Array<UIColor>,
        settings: Settings = Settings()) {
-    self.position = position
+    self.side = side
     self.colors = colors
     self.settings = settings
-    self.pathBuilder = createPathBuilder(with: position)
+    self.pathBuilder = createPathBuilder(side: side)
     super.init(frame: CGRect.zero)
     shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
@@ -125,7 +125,7 @@ extension JellyView {
   private func setInnerViewInitialPosition() {
     setupSettings(settings)
     let path = pathBuilder.buildInitialPath(inputData: pathInputData)
-    updateInnerViewPosition(from: path)
+    updateInnerViewPosition(with: path)
   }
 
   private func updateColors() {
@@ -171,7 +171,7 @@ extension JellyView: UIGestureRecognizerDelegate {
       setupSettings(settings)
     }
 
-    touchPoint = pan.touchPoint(forPosition: position, flexibility: settings.flexibility)
+    touchPoint = pan.touchPoint(forSide: side, flexibility: settings.flexibility)
 
     switch pan.state {
     case .began:
@@ -193,7 +193,7 @@ extension JellyView: UIGestureRecognizerDelegate {
   private func shouldInitiateAction() -> Bool {
     var size: CGFloat
     var currentProgress: CGFloat
-    switch position {
+    switch side {
     case .left:
       size = frame.translatedFrame().size.width
       currentProgress = touchPoint.x
@@ -228,7 +228,7 @@ extension JellyView: UIGestureRecognizerDelegate {
 
   private func applyPath(_ path: Path) {
     bezierPath.setPath(path)
-    updateInnerViewPosition(from: path)
+    updateInnerViewPosition(with: path)
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = bezierPath.cgPath
@@ -307,7 +307,7 @@ extension JellyView {
     guard let path = presentationLayer.path else { return }
     let bezierPath = UIBezierPath(cgPath: path)
     if let path = bezierPath.currentPath() {
-      updateInnerViewPosition(from: path)
+      updateInnerViewPosition(with: path)
     }
   }
 }
@@ -316,7 +316,7 @@ extension JellyView {
 
 extension JellyView {
     
-  private func updateInnerViewPosition(from path: Path) {
+  private func updateInnerViewPosition(with path: Path) {
     
     let fstDelta = 1 - Constants.bezierCurveDelta
     let sndDelta = Constants.bezierCurveDelta
@@ -327,7 +327,7 @@ extension JellyView {
     
     var x, y, width, height: CGFloat
     
-    switch position {
+    switch side {
     case .left:
       width = Constants.innerViewSize
       height = point2.y - point1.y
@@ -360,7 +360,7 @@ extension JellyView {
   private func transformInfoView() {
     let tpValue = touchPointValue()
     var degrees: CGFloat = Constants.maxDegreesTransform * tpValue
-    if position == .right || position == .bottom {
+    if side == .right || side == .bottom {
       degrees *= -1
     }
     infoView!.transform = CGAffineTransform(rotationAngle: CGFloat(degrees.degreesToRadians))
@@ -370,7 +370,7 @@ extension JellyView {
     
     var touchCoord = touchPoint.y
     var touchAreaSize = frame.translatedFrame().size.height
-    if position == .top || position == .bottom {
+    if side == .top || side == .bottom {
       touchCoord = touchPoint.x
       touchAreaSize = frame.translatedFrame().size.width
     }
