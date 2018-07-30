@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		DE245076F3FADDEF296211F5 /* Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE24550566354414271F5541 /* Structs.swift */; };
 		DE2451765F8F3EEF139C5C1A /* PathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2456480A9493F614CF7902 /* PathBuilder.swift */; };
-		DE24569FE77A7216CD40C81D /* PositionCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245E4ECEEACEDE767B6D63 /* PositionCalculator.swift */; };
+		DE2454B46A31396F5DBC80FD /* PositionCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2454DD553E727FB3DB6A35 /* PositionCalculator.swift */; };
 		DE2458905CD49F9D2664577C /* LeftSidePathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245C3A4A2A6D2D7C4A3821 /* LeftSidePathBuilder.swift */; };
 		DE245A27FCBC54FACA89F76C /* TopSidePathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE24515DA1A1FEE632B7D9C4 /* TopSidePathBuilder.swift */; };
 		DE245C0F75825D0D1BDF26C4 /* BottomSidePathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2459E918EBD8A75EAC263D /* BottomSidePathBuilder.swift */; };
 		DE245DC65FEC5C5073E920FC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE24566C8901E43CECB9EF4F /* Constants.swift */; };
+		DE245E4A585B3DE01CAA0D16 /* InnerViewFrameCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2454B56FC6F8FAE35C3BDD /* InnerViewFrameCalculator.swift */; };
 		DE245EDCC1DD6ED88FC53588 /* RightSidePathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245C23100E53610BEFFABE /* RightSidePathBuilder.swift */; };
 		E71DF4961CD243FD008DF0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4951CD243FD008DF0DC /* AppDelegate.swift */; };
 		E71DF4981CD243FD008DF0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4971CD243FD008DF0DC /* ViewController.swift */; };
@@ -25,13 +26,14 @@
 
 /* Begin PBXFileReference section */
 		DE24515DA1A1FEE632B7D9C4 /* TopSidePathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopSidePathBuilder.swift; sourceTree = "<group>"; };
+		DE2454B56FC6F8FAE35C3BDD /* InnerViewFrameCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InnerViewFrameCalculator.swift; sourceTree = "<group>"; };
+		DE2454DD553E727FB3DB6A35 /* PositionCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PositionCalculator.swift; sourceTree = "<group>"; };
 		DE24550566354414271F5541 /* Structs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structs.swift; sourceTree = "<group>"; };
 		DE2456480A9493F614CF7902 /* PathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PathBuilder.swift; sourceTree = "<group>"; };
 		DE24566C8901E43CECB9EF4F /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DE2459E918EBD8A75EAC263D /* BottomSidePathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomSidePathBuilder.swift; sourceTree = "<group>"; };
 		DE245C23100E53610BEFFABE /* RightSidePathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RightSidePathBuilder.swift; sourceTree = "<group>"; };
 		DE245C3A4A2A6D2D7C4A3821 /* LeftSidePathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeftSidePathBuilder.swift; sourceTree = "<group>"; };
-		DE245E4ECEEACEDE767B6D63 /* PositionCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PositionCalculator.swift; sourceTree = "<group>"; };
 		E71DF4921CD243FD008DF0DC /* JellyView-Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "JellyView-Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E71DF4951CD243FD008DF0DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E71DF4971CD243FD008DF0DC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -64,6 +66,15 @@
 				DE2459E918EBD8A75EAC263D /* BottomSidePathBuilder.swift */,
 			);
 			path = Path;
+			sourceTree = "<group>";
+		};
+		DE2459094204F9862370E674 /* InnerViewFrameCalculator */ = {
+			isa = PBXGroup;
+			children = (
+				DE2454B56FC6F8FAE35C3BDD /* InnerViewFrameCalculator.swift */,
+				DE2454DD553E727FB3DB6A35 /* PositionCalculator.swift */,
+			);
+			path = InnerViewFrameCalculator;
 			sourceTree = "<group>";
 		};
 		E71DF4891CD243FD008DF0DC = {
@@ -102,9 +113,9 @@
 			children = (
 				E71DF4AA1CD24435008DF0DC /* JellyView.swift */,
 				E71DF4AC1CD24BCA008DF0DC /* JellyViewExtensions.swift */,
-				DE245E4ECEEACEDE767B6D63 /* PositionCalculator.swift */,
 				DE245529DE1F8DF34A0D41B9 /* Path */,
 				DE24566C8901E43CECB9EF4F /* Constants.swift */,
+				DE2459094204F9862370E674 /* InnerViewFrameCalculator */,
 			);
 			path = JellyView;
 			sourceTree = "<group>";
@@ -135,6 +146,7 @@
 		E71DF48A1CD243FD008DF0DC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = "";
 				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Vladimir Kozlovskyi";
@@ -185,7 +197,6 @@
 				E71DF4981CD243FD008DF0DC /* ViewController.swift in Sources */,
 				E71DF4961CD243FD008DF0DC /* AppDelegate.swift in Sources */,
 				E71DF4AB1CD24435008DF0DC /* JellyView.swift in Sources */,
-				DE24569FE77A7216CD40C81D /* PositionCalculator.swift in Sources */,
 				DE245076F3FADDEF296211F5 /* Structs.swift in Sources */,
 				DE2451765F8F3EEF139C5C1A /* PathBuilder.swift in Sources */,
 				DE2458905CD49F9D2664577C /* LeftSidePathBuilder.swift in Sources */,
@@ -193,6 +204,8 @@
 				DE245A27FCBC54FACA89F76C /* TopSidePathBuilder.swift in Sources */,
 				DE245C0F75825D0D1BDF26C4 /* BottomSidePathBuilder.swift in Sources */,
 				DE245DC65FEC5C5073E920FC /* Constants.swift in Sources */,
+				DE245E4A585B3DE01CAA0D16 /* InnerViewFrameCalculator.swift in Sources */,
+				DE2454B46A31396F5DBC80FD /* PositionCalculator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

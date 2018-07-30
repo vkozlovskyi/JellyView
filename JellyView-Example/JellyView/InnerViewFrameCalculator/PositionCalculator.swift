@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-class PositionCalculator {
+class CurvePointCalculator {
 
   func pointFromCubicBezierCurve(delta t: CGFloat,
                                  curve: Curve) -> CGPoint {

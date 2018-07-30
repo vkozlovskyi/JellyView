@@ -46,7 +46,8 @@ public final class JellyView: UIView {
   // Private
 
   private let settings: Settings
-  private let pathBuilder: PathBuilder!
+  private let pathBuilder: PathBuilder
+  private let innerViewFrameCalculator: InnerViewFrameCalculator
   private let innerView = UIView()
   private var touchPoint = CGPoint.zero
   private var shapeLayer = CAShapeLayer()
@@ -58,7 +59,6 @@ public final class JellyView: UIView {
   private let colors: Array<UIColor>
   private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
-  private var positionCalculator = PositionCalculator()
   private var isRendered = false
   private var pathInputData: PathInputData {
     return PathInputData(touchPoint: touchPoint,
@@ -74,6 +74,7 @@ public final class JellyView: UIView {
     self.colors = colors
     self.settings = settings
     self.pathBuilder = createPathBuilder(side: side)
+    self.innerViewFrameCalculator = InnerViewFrameCalculator(side: side)
     super.init(frame: CGRect.zero)
     shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
@@ -189,7 +190,7 @@ extension JellyView: UIGestureRecognizerDelegate {
     default: break
     }
   }
-  
+
   private func shouldInitiateAction() -> Bool {
     var size: CGFloat
     var currentProgress: CGFloat
@@ -317,40 +318,8 @@ extension JellyView {
 extension JellyView {
     
   private func updateInnerViewPosition(with path: Path) {
-    
-    let fstDelta = 1 - Constants.bezierCurveDelta
-    let sndDelta = Constants.bezierCurveDelta
-    let point1 = positionCalculator.pointFromCubicBezierCurve(delta: fstDelta,
-                                                              curve: path.fstCurve)
-    let point2 = positionCalculator.pointFromCubicBezierCurve(delta: sndDelta,
-                                                              curve: path.sndCurve)
-    
-    var x, y, width, height: CGFloat
-    
-    switch side {
-    case .left:
-      width = Constants.innerViewSize
-      height = point2.y - point1.y
-      x = point1.x - width + settings.offset
-      y = point1.y
-    case .right:
-      width = Constants.innerViewSize
-      height = point2.y - point1.y
-      x = point1.x - settings.offset
-      y = point1.y
-    case .top:
-      width = point2.x - point1.x
-      height = Constants.innerViewSize
-      x = point1.x
-      y = point1.y - height + settings.offset
-    case .bottom:
-      width = point2.x - point1.x
-      height = Constants.innerViewSize
-      x = point1.x
-      y = point1.y - settings.offset
-    }
-    
-    innerView.frame = CGRect(x: x, y: y, width: width, height: height)
+    let frame = innerViewFrameCalculator.calculateFrame(with: path, offset: settings.offset)
+    innerView.frame = frame
     if let view = infoView {
       view.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
       transformInfoView()
