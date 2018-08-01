@@ -8,25 +8,6 @@
 
 import UIKit
 
-extension UIPanGestureRecognizer {
-  
-  public func touchPoint(forSide side: JellyView.Side, flexibility flx: CGFloat) -> CGPoint {
-    var touchPoint = CGPoint.zero
-    switch side {
-    case .left:
-      touchPoint = CGPoint(x: self.translation(in: self.view).x * flx, y: self.location(in: self.view).y)
-    case .right:
-      touchPoint = CGPoint(x: self.translation(in: self.view).x * flx, y: self.location(in: self.view).y)
-    case .top:
-      touchPoint = CGPoint(x: self.location(in: self.view).x, y: self.translation(in: self.view).y * flx)
-    case .bottom:
-      touchPoint = CGPoint(x: self.location(in: self.view).x, y: self.translation(in: self.view).y * flx)
-    }
-    return touchPoint
-  }
-  
-}
-
 extension CGRect {
   func translatedFrame() -> CGRect {
     var frame = CGRect.zero
@@ -120,5 +101,5 @@ extension UIBezierPath {
 }
 
 extension CGFloat {
-  var degreesToRadians: Double { return Double(self) * .pi / 180 }
+  var degreesToRadians: CGFloat { return self * CGFloat.pi / 180 }
 }

@@ -16,6 +16,7 @@
 		DE245DC65FEC5C5073E920FC /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE24566C8901E43CECB9EF4F /* Constants.swift */; };
 		DE245E4A585B3DE01CAA0D16 /* InnerViewFrameCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE2454B56FC6F8FAE35C3BDD /* InnerViewFrameCalculator.swift */; };
 		DE245EDCC1DD6ED88FC53588 /* RightSidePathBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245C23100E53610BEFFABE /* RightSidePathBuilder.swift */; };
+		DE245EF01BA535143EA09305 /* JellyPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE245141367FEF7E35626A7C /* JellyPanGestureRecognizer.swift */; };
 		E71DF4961CD243FD008DF0DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4951CD243FD008DF0DC /* AppDelegate.swift */; };
 		E71DF4981CD243FD008DF0DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71DF4971CD243FD008DF0DC /* ViewController.swift */; };
 		E71DF49D1CD243FD008DF0DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E71DF49C1CD243FD008DF0DC /* Assets.xcassets */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DE245141367FEF7E35626A7C /* JellyPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JellyPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		DE24515DA1A1FEE632B7D9C4 /* TopSidePathBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopSidePathBuilder.swift; sourceTree = "<group>"; };
 		DE2454B56FC6F8FAE35C3BDD /* InnerViewFrameCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InnerViewFrameCalculator.swift; sourceTree = "<group>"; };
 		DE2454DD553E727FB3DB6A35 /* PositionCalculator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PositionCalculator.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				DE245529DE1F8DF34A0D41B9 /* Path */,
 				DE24566C8901E43CECB9EF4F /* Constants.swift */,
 				DE2459094204F9862370E674 /* InnerViewFrameCalculator */,
+				DE245141367FEF7E35626A7C /* JellyPanGestureRecognizer.swift */,
 			);
 			path = JellyView;
 			sourceTree = "<group>";
@@ -206,6 +209,7 @@
 				DE245DC65FEC5C5073E920FC /* Constants.swift in Sources */,
 				DE245E4A585B3DE01CAA0D16 /* InnerViewFrameCalculator.swift in Sources */,
 				DE2454B46A31396F5DBC80FD /* PositionCalculator.swift in Sources */,
+				DE245EF01BA535143EA09305 /* JellyPanGestureRecognizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

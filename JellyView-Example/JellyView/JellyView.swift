@@ -48,20 +48,18 @@ public final class JellyView: UIView {
   private let settings: Settings
   private let pathBuilder: PathBuilder
   private let innerViewFrameCalculator: InnerViewFrameCalculator
+  private let gestureRecognizer: JellyPanGestureRecognizer
   private let innerView = UIView()
-  private var touchPoint = CGPoint.zero
   private var shapeLayer = CAShapeLayer()
   private let bezierPath = UIBezierPath()
   private weak var containerView: UIView?
-  private let side: Side
   private var displayLink: CADisplayLink!
   private var colorIndex: Int = 0
   private let colors: Array<UIColor>
-  private let gestureRecognizer = UIPanGestureRecognizer()
   private var shouldDisableAnimation = true
   private var isRendered = false
   private var pathInputData: PathInputData {
-    return PathInputData(touchPoint: touchPoint,
+    return PathInputData(touchPoint: gestureRecognizer.touchPoint(flexibility: settings.flexibility),
                          frame: frame.translatedFrame(),
                          innerPointRatio: settings.innerPointRatio,
                          outerPointRatio: settings.outerPointRatio)
@@ -70,11 +68,11 @@ public final class JellyView: UIView {
   init(side: Side,
        colors: Array<UIColor>,
        settings: Settings = Settings()) {
-    self.side = side
     self.colors = colors
     self.settings = settings
     self.pathBuilder = createPathBuilder(side: side)
     self.innerViewFrameCalculator = InnerViewFrameCalculator(side: side)
+    self.gestureRecognizer = createJellyPanGestureRecognizer(with: side)
     super.init(frame: CGRect.zero)
     shapeLayer.fillColor = colors[colorIndex].cgColor
     setupDisplayLink()
@@ -168,14 +166,9 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
   
   @objc private func handlePanGesture(_ pan: UIPanGestureRecognizer) {
-    if pan.state == .began {
-      setupSettings(settings)
-    }
-
-    touchPoint = pan.touchPoint(forSide: side, flexibility: settings.flexibility)
-
     switch pan.state {
     case .began:
+      setupSettings(settings)
       didStartDragging()
       modifyShapeLayerForTouch()
     case .changed:
@@ -192,25 +185,8 @@ extension JellyView: UIGestureRecognizerDelegate {
   }
 
   private func shouldInitiateAction() -> Bool {
-    var size: CGFloat
-    var currentProgress: CGFloat
-    switch side {
-    case .left:
-      size = frame.translatedFrame().size.width
-      currentProgress = touchPoint.x
-    case .right:
-      size = frame.translatedFrame().size.width
-      currentProgress = -touchPoint.x
-    case .top:
-      size = frame.translatedFrame().size.height
-      currentProgress = touchPoint.y
-    case .bottom:
-      size = frame.translatedFrame().size.height
-      currentProgress = -touchPoint.y
-    }
-    
-    let maxProgress = size * settings.triggerThreshold
-    if currentProgress >= maxProgress {
+    let maxProgress = gestureRecognizer.totalProgressSize * settings.triggerThreshold
+    if gestureRecognizer.currentProgress(flexibility: settings.flexibility) >= maxProgress {
       return true
     } else {
       return false
@@ -322,30 +298,7 @@ extension JellyView {
     innerView.frame = frame
     if let view = infoView {
       view.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
-      transformInfoView()
+      view.transform = CGAffineTransform(rotationAngle: gestureRecognizer.innerViewRotationAngle(flexibility: settings.flexibility))
     }
-  }
-  
-  private func transformInfoView() {
-    let tpValue = touchPointValue()
-    var degrees: CGFloat = Constants.maxDegreesTransform * tpValue
-    if side == .right || side == .bottom {
-      degrees *= -1
-    }
-    infoView!.transform = CGAffineTransform(rotationAngle: CGFloat(degrees.degreesToRadians))
-  }
-  
-  private func touchPointValue() -> CGFloat {
-    
-    var touchCoord = touchPoint.y
-    var touchAreaSize = frame.translatedFrame().size.height
-    if side == .top || side == .bottom {
-      touchCoord = touchPoint.x
-      touchAreaSize = frame.translatedFrame().size.width
-    }
-    
-    let difference = touchAreaSize - touchCoord
-    let result = 1 - (difference / (touchAreaSize / 2))
-    return result
   }
 }
