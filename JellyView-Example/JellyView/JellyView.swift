@@ -55,7 +55,7 @@ public final class JellyView: UIView {
   private weak var containerView: UIView?
   private var displayLink: CADisplayLink!
   private var colorIndex: Int = 0
-  private let colors: Array<UIColor>
+  private let colors: [UIColor]
   private var shouldDisableAnimation = true
   private var isRendered = false
   private var pathInputData: PathInputData {
@@ -66,7 +66,7 @@ public final class JellyView: UIView {
   }
 
   init(side: Side,
-       colors: Array<UIColor>,
+       colors: [UIColor],
        settings: Settings = Settings()) {
     self.colors = colors
     self.settings = settings

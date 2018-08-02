@@ -12,8 +12,8 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.view.backgroundColor = colors().last
-    let jellyView = JellyView(side: .left, colors: colors())
+    self.view.backgroundColor = colors.last
+    let jellyView = JellyView(side: .left, colors: colors)
     self.view.addSubview(jellyView)
     let infoLabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 80))
     infoLabel.numberOfLines = 2
@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     }
   }
   
-  func colors() -> Array<UIColor> {
+  var colors: [UIColor] {
     let colors = [
       UIColor(red: 117.0/255.0, green: 170.0/255.0, blue: 255.0/255.0, alpha: 1.0),
       UIColor(red: 255.0/255.0, green: 233.0/255.0, blue: 124.0/255.0, alpha: 1.0),
@@ -35,10 +35,4 @@ class ViewController: UIViewController {
       UIColor(red: 255.0/255.0, green: 188.0/255.0, blue: 125.0/255.0, alpha: 1.0)]
     return colors
   }
-  
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
-  }
-  
 }
