@@ -22,7 +22,7 @@ class ViewController: UIViewController {
     infoLabel.textAlignment = NSTextAlignment.center
     jellyView.infoView = infoLabel
     jellyView.setupSettings = { settings in
-      settings.offset = -30
+      settings.innerViewOffset = -30
     }
   }
   

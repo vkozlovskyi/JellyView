@@ -22,7 +22,7 @@ public final class JellyView: UIView {
     public var flexibility: CGFloat = 0.7
     public var jellyMass: CGFloat = 1.0
     public var springStiffness: CGFloat = 400.0
-    public var offset: CGFloat = 0
+    public var innerViewOffset: CGFloat = 0
   }
 
   // Interface
@@ -294,7 +294,7 @@ extension JellyView {
 extension JellyView {
     
   private func updateInnerViewPosition(with path: Path) {
-    let frame = innerViewFrameCalculator.calculateFrame(with: path, offset: settings.offset)
+    let frame = innerViewFrameCalculator.calculateFrame(with: path, offset: settings.innerViewOffset)
     innerView.frame = frame
     if let view = infoView {
       view.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
