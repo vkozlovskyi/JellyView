@@ -201,11 +201,13 @@ extension JellyView: UIGestureRecognizerDelegate {
   private func modifyShapeLayerForInitialPosition() {
     let path = pathBuilder.buildInitialPath(inputData: pathInputData)
     applyPath(path)
+    transformInfoViewToIdentity()
   }
 
   private func applyPath(_ path: Path) {
     bezierPath.setPath(path)
     updateInnerViewPosition(with: path)
+    transformInfoViewToTouchAngle()
     CATransaction.begin()
     CATransaction.setDisableActions(true)
     shapeLayer.path = bezierPath.cgPath
@@ -230,6 +232,7 @@ extension JellyView {
     springAnimation.duration = springAnimation.settlingDuration
     springAnimation.fromValue = bezierPath.cgPath
     bezierPath.setPath(path)
+    transformInfoViewToIdentity(duration: springAnimation.settlingDuration)
     shapeLayer.path = bezierPath.cgPath
     CATransaction.setCompletionBlock { self.animationToInitialDidFinish() }
     shapeLayer.add(springAnimation, forKey: "path")
@@ -296,9 +299,18 @@ extension JellyView {
   private func updateInnerViewPosition(with path: Path) {
     let frame = innerViewFrameCalculator.calculateFrame(with: path, offset: settings.innerViewOffset)
     innerView.frame = frame
-    if let view = infoView {
-      view.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
-      view.transform = CGAffineTransform(rotationAngle: gestureRecognizer.innerViewRotationAngle(flexibility: settings.flexibility))
+    infoView?.center = CGPoint(x: innerView.frame.size.width / 2, y: innerView.frame.size.height / 2)
+  }
+
+  private func transformInfoViewToTouchAngle() {
+    guard let infoView = infoView else { return }
+    infoView.transform = CGAffineTransform(rotationAngle: gestureRecognizer.innerViewRotationAngle(flexibility: settings.flexibility))
+  }
+
+  private func transformInfoViewToIdentity(duration: TimeInterval = 0) {
+    guard let infoView = infoView else { return }
+    UIView.animate(withDuration: duration) {
+      infoView.transform = CGAffineTransform.identity
     }
   }
 }
