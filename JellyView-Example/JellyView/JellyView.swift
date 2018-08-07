@@ -31,6 +31,7 @@ public final class JellyView: UIView {
   public var didStartDragging: () -> Void = { }
   public var actionDidFire: () -> Void = { }
   public var didEndDragging: () -> Void = { }
+  public var didDrag: (_ touchPoint: CGPoint) -> Void = { _ in }
   public var setupSettings: (Settings) -> Void = { _ in }
   public var infoView: UIView? {
     willSet {
@@ -195,6 +196,7 @@ extension JellyView: UIGestureRecognizerDelegate {
   
   private func modifyShapeLayerForTouch() {
     let path = pathBuilder.buildCurrentPath(inputData: pathInputData)
+    didDrag(gestureRecognizer.touchPoint(flexibility: settings.flexibility))
     applyPath(path)
   }
   
