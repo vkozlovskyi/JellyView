@@ -12,21 +12,41 @@ class ViewController: UIViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.view.backgroundColor = colors.last
+    view.backgroundColor = colors.last
+    setupJellyView()
+  }
+
+  private func setupJellyView() {
     let jellyView = JellyView(side: .left, colors: colors)
-    self.view.addSubview(jellyView)
-    let infoLabel = UILabel(frame: CGRect(x: 0.0, y: 0.0, width: 150.0, height: 80))
-    infoLabel.numberOfLines = 2
-    infoLabel.font = UIFont.boldSystemFont(ofSize: 30)
-    infoLabel.text = "Pull To\nRefresh"
-    infoLabel.textAlignment = NSTextAlignment.center
-    jellyView.infoView = infoLabel
+    view.addSubview(jellyView)
+    jellyView.infoView = createInfoView()
     jellyView.setupSettings = { settings in
-      settings.innerViewOffset = -30
+      settings.innerViewOffset = 0
     }
   }
+
+  private func createInfoView() -> UIView {
+    let size: CGFloat = 100
+    let alpha: CGFloat = 0.5
+
+    let infoView = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+    infoView.backgroundColor = .clear
+
+    let imageView = UIImageView(image: UIImage(named: "refresh-button")!)
+    imageView.alpha = alpha
+    imageView.frame = CGRect(x: size / 4, y: 0, width: size / 2, height: size / 2)
+    infoView.addSubview(imageView)
+
+    let pullLabel = UILabel(frame: CGRect(x: 0, y: 40, width: size, height: size / 2))
+    pullLabel.font = UIFont(name: "Noteworthy-Bold", size: 30)!
+    pullLabel.text = "Pull"
+    pullLabel.textAlignment = .center
+    pullLabel.alpha = alpha
+    infoView.addSubview(pullLabel)
+    return infoView
+  }
   
-  var colors: [UIColor] {
+  private var colors: [UIColor] {
     let colors = [
       UIColor(red: 117.0/255.0, green: 170.0/255.0, blue: 255.0/255.0, alpha: 1.0),
       UIColor(red: 255.0/255.0, green: 233.0/255.0, blue: 124.0/255.0, alpha: 1.0),
