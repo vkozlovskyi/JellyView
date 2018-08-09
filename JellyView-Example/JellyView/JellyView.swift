@@ -30,8 +30,9 @@ public final class JellyView: UIView {
   public var isEnabled: Bool = true
   public var didStartDragging: () -> Void = { }
   public var actionDidFire: () -> Void = { }
+  public var actionDidCancel: () -> Void = { }
   public var didEndDragging: () -> Void = { }
-  public var didDrag: (_ touchPoint: CGPoint) -> Void = { _ in }
+  public var didDrag: (_ progress: CGFloat) -> Void = { _ in }
   public var setupSettings: (Settings) -> Void = { _ in }
   public var infoView: UIView? {
     willSet {
@@ -179,6 +180,7 @@ extension JellyView: UIGestureRecognizerDelegate {
       if shouldInitiateAction() {
         animateToFinalPosition()
       } else {
+        actionDidCancel()
         animateToInitialPosition()
       }
     default: break
@@ -196,7 +198,8 @@ extension JellyView: UIGestureRecognizerDelegate {
   
   private func modifyShapeLayerForTouch() {
     let path = pathBuilder.buildCurrentPath(inputData: pathInputData)
-    didDrag(gestureRecognizer.touchPoint(flexibility: settings.flexibility))
+    let progress = gestureRecognizer.currentProgress(flexibility: settings.flexibility) / gestureRecognizer.totalProgressSize
+    didDrag(progress)
     applyPath(path)
   }
   
