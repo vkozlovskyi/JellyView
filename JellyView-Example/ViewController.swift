@@ -72,7 +72,7 @@ class ViewController: UIViewController {
     let infoView = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
     infoView.backgroundColor = .clear
 
-    let imageView = UIImageView(image: UIImage(named: "refresh-button")!)
+    let imageView = UIImageView(image: UIImage(named: "right-arrow")!)
     imageView.alpha = alpha
     imageView.frame = CGRect(x: size / 4, y: 0, width: size / 2, height: size / 2)
     infoView.addSubview(imageView)
