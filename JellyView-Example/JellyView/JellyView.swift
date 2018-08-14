@@ -23,6 +23,8 @@ public final class JellyView: UIView {
     public var jellyMass: CGFloat = 1.0
     public var springStiffness: CGFloat = 400.0
     public var innerViewOffset: CGFloat = 0
+
+    public init() { }
   }
 
   // Interface
