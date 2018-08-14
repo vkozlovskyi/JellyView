@@ -67,7 +67,7 @@ public final class JellyView: UIView {
                          outerPointRatio: settings.outerPointRatio)
   }
 
-  init(side: Side,
+  public init(side: Side,
        colors: [UIColor],
        settings: Settings = Settings()) {
     self.colors = colors
