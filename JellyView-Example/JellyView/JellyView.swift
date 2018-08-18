@@ -30,12 +30,12 @@ public final class JellyView: UIView {
   // Interface
 
   public var isEnabled: Bool = true
+  public var settings: Settings
   public var didStartDragging: () -> Void = { }
   public var actionDidFire: () -> Void = { }
   public var actionDidCancel: () -> Void = { }
   public var didEndDragging: () -> Void = { }
   public var didDrag: (_ progress: CGFloat) -> Void = { _ in }
-  public var setupSettings: (Settings) -> Void = { _ in }
   public var infoView: UIView? {
     willSet {
       if let view = infoView {
@@ -49,7 +49,6 @@ public final class JellyView: UIView {
 
   // Private
 
-  private let settings: Settings
   private let pathBuilder: PathBuilder
   private let innerViewFrameCalculator: InnerViewFrameCalculator
   private let gestureRecognizer: JellyPanGestureRecognizer
@@ -126,7 +125,6 @@ public final class JellyView: UIView {
 extension JellyView {
 
   private func setInnerViewInitialPosition() {
-    setupSettings(settings)
     let path = pathBuilder.buildInitialPath(inputData: pathInputData)
     updateInnerViewPosition(with: path)
   }
@@ -172,7 +170,6 @@ extension JellyView: UIGestureRecognizerDelegate {
   @objc private func handlePanGesture(_ pan: UIPanGestureRecognizer) {
     switch pan.state {
     case .began:
-      setupSettings(settings)
       didStartDragging()
       modifyShapeLayerForTouch()
     case .changed:

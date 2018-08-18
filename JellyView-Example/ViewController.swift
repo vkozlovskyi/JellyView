@@ -24,9 +24,7 @@ class ViewController: UIViewController {
     let jellyView = JellyView(side: .left, colors: colors)
     view.addSubview(jellyView)
     jellyView.infoView = createInfoView()
-    jellyView.setupSettings = { settings in
-      settings.innerViewOffset = 0
-    }
+    jellyView.settings.innerViewOffset = 0
     jellyView.actionDidFire = { [unowned self] in
       self.contentLabel.alpha = 1
       let text = self.getContentLabelText()
