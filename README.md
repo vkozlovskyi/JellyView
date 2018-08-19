@@ -26,6 +26,30 @@ iOS 10
 
 Just add JellyView folder into your project.
 
+## Usage
+
+```swift
+import JellyView
+
+// Choose the side of the screen: .left, .right, .top or .bottom
+// Provide an array of colors for the background
+let jellyView = JellyView(side: .left, colors: colors)
+view.addSubview(jellyView)
+
+// Add custom view inside:
+jellyView.infoView = createInfoView()
+
+// Change various settings for customizing animation and the shape, like this:
+jellyView.settings.jellyMass = 1.1
+jellyView.settings.innerViewOffset = -20
+
+// Use closures for tracking events:
+jellyView.didStartDragging { … }
+jellyView.actionDidFire { … }
+jellyView.actionDidCancel { … }
+jellyView.didEndDragging { … }
+```
+
 ## Demo
 
 Check out the Example project.
